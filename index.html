@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktives Dashboard zur Standortbestimmung der neuen Verbandsförderung Swiss Olympic – Pilotbewertung 2026 mit Förder-Simulator und Sportart-Simulator.">
+<title>Standortbestimmung Verbandsförderung – Pilotbewertung 2026</title>
+<style>
+:root{
+  --green:#4a9b5e;--green-bg:#eef7f0;--green-soft:#dceede;
+  --yellow:#d9b53a;--yellow-bg:#fbf6e0;--yellow-soft:#f4ead0;
+  --blue:#5b9bd5;--blue-bg:#eaf2fb;--blue-soft:#d6e6f6;
+  --red:#e06464;--red-bg:#fbecec;--red-soft:#f5d8d8;
+  --purple:#9b59b6;--purple-bg:#f5eefa;--purple-soft:#e8d5f5;
+  --teal:#0d9488;--teal-bg:#e6f7f5;--teal-soft:#c9eeea;
+  --ink:#1f2733;--muted:#6b7480;--line:#e6e9ee;--bg:#f4f6f8;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.4}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 22px 60px}
+a{color:#2f6fb0}
+.head{background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:18px 22px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.head h1{font-size:22px;margin:0 0 8px;font-weight:800;letter-spacing:-.2px}
+.badge{display:inline-block;border:1px solid #bcd0e6;background:#fff;color:#2f6fb0;font-weight:700;font-size:11px;padding:3px 9px;border-radius:5px}
+.sub{color:var(--muted);font-size:12px;font-weight:600;margin-left:8px}
+.logo{text-align:right;line-height:1.05;flex:none}
+.logo .rings{font-size:13px;letter-spacing:1px}.logo .sw b{color:#e2001a}.logo .sw{font-weight:800;font-size:15px}
+.logo .ol{font-style:italic;font-weight:700;font-size:22px}.logo small{color:var(--muted);font-size:9px;font-style:italic}
+.filter{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0 6px}
+.filter label{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+select{font-size:15px;font-weight:700;padding:9px 12px;border:1px solid #c7ced8;border-radius:8px;background:#fff;color:var(--ink);min-width:320px;cursor:pointer}
+.navbtn{border:1px solid #c7ced8;background:#fff;border-radius:8px;padding:9px 13px;cursor:pointer;font-weight:700;color:var(--ink)}
+.navbtn:hover{background:#f0f3f7}
+.gesamtnote{margin-left:auto;text-align:right}
+.gesamtnote .k{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700}
+.gesamtnote .v{font-size:22px;font-weight:800}
+h2.section{font-size:15px;font-weight:800;margin:28px 0 12px;display:flex;align-items:center;gap:8px}
+h2.section .hint{font-weight:600;font-size:11px;color:var(--muted)}
+.grid4{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(20,30,50,.04);cursor:pointer;transition:transform .08s,box-shadow .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(20,30,50,.10)}
+.card .hd{padding:11px 15px;font-weight:800;font-size:14px;border-top:4px solid;display:flex;justify-content:space-between;align-items:center}
+.card .hd .dd{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;opacity:.7}
+.card .bd{padding:13px 15px}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px dotted var(--line)}
+.row:last-child{border-bottom:0}.row .l{color:var(--muted)}
+.row .r{font-weight:700;font-variant-numeric:tabular-nums}
+.big{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.kat{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:5px}
+.bar{height:7px;border-radius:4px;background:var(--line);margin-top:9px;overflow:hidden}.bar i{display:block;height:100%}
+.c-green .hd{border-color:var(--green);background:var(--green-bg)}.c-green .big,.c-green .kat{color:var(--green)}.c-green .kat{background:var(--green-soft)}.c-green .bar i{background:var(--green)}.c-green .dd{color:var(--green)}
+.c-yellow .hd{border-color:var(--yellow);background:var(--yellow-bg)}.c-yellow .big,.c-yellow .kat{color:#a9851b}.c-yellow .kat{background:var(--yellow-soft)}.c-yellow .bar i{background:var(--yellow)}.c-yellow .dd{color:#a9851b}
+.c-blue .hd{border-color:var(--blue);background:var(--blue-bg)}.c-blue .big,.c-blue .kat{color:#3a78b5}.c-blue .kat{background:var(--blue-soft)}.c-blue .bar i{background:var(--blue)}.c-blue .dd{color:#3a78b5}
+.c-red .hd{border-color:var(--red);background:var(--red-bg)}.c-red .big,.c-red .kat{color:#c44d4d}.c-red .kat{background:var(--red-soft)}.c-red .bar i{background:var(--red)}.c-red .dd{color:#c44d4d}
+.c-purple .hd{border-color:var(--purple);background:var(--purple-bg)}.c-purple .big,.c-purple .kat{color:#7d3e96}.c-purple .kat{background:var(--purple-soft)}.c-purple .bar i{background:var(--purple)}.c-purple .dd{color:#7d3e96}
+.c-teal .hd{border-color:var(--teal);background:var(--teal-bg)}.c-teal .big,.c-teal .kat{color:#0a7a70}.c-teal .kat{background:var(--teal-soft)}.c-teal .bar i{background:var(--teal)}.c-teal .dd{color:#0a7a70}
+.rank{font-size:11px;color:var(--muted);margin-top:8px}.rank b{color:var(--ink)}
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.panel h3{margin:0 0 4px;font-size:14px;font-weight:800}
+.panel .ph{font-size:11px;color:var(--muted);margin-bottom:10px}
+.radar-leg{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:6px;font-size:12px}
+.radar-leg span{display:inline-flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+.sc-wrap{position:relative}
+.tip{position:absolute;pointer-events:none;background:#1f2733;color:#fff;font-size:11px;padding:5px 8px;border-radius:6px;opacity:0;transform:translate(-50%,-130%);white-space:nowrap;transition:opacity .1s;z-index:5}
+.ls-wrap{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 18px 16px;border-top:4px solid var(--red)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700}
+th:first-child,td:first-child{text-align:left}
+td.sport{font-weight:700}
+tbody tr{cursor:pointer}tbody tr:hover{background:#fafbfc}
+.minibar{display:inline-block;width:90px;height:7px;border-radius:4px;background:var(--line);vertical-align:middle;overflow:hidden;margin-left:8px}.minibar i{display:block;height:100%;background:var(--red)}
+.zero{color:#b9c0c9}
+.cmp{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{border:1px solid #c7ced8;background:#fff;border-radius:20px;padding:6px 14px;cursor:pointer;font-weight:700;font-size:12px;color:var(--muted)}
+.tab.active{color:#fff;border-color:transparent}
+.tab.active[data-dim=ba]{background:var(--green)}.tab.active[data-dim=bs]{background:var(--yellow)}.tab.active[data-dim=sp]{background:var(--blue)}.tab.active[data-dim=ls]{background:var(--red)}
+.cbar-row{display:grid;grid-template-columns:230px 1fr 56px;align-items:center;gap:10px;padding:2px 0;cursor:pointer}
+.cbar-row .nm{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;color:var(--muted)}
+.cbar-row.sel .nm{font-weight:800;color:var(--ink)}
+.cbar{height:14px;border-radius:4px;background:#eef0f3;overflow:hidden}.cbar i{display:block;height:100%;opacity:.55}.cbar-row.sel .cbar i{opacity:1}
+.cval{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.hm{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 8px 14px;overflow-x:auto}
+.hm table{min-width:640px}.hm th{padding:8px 6px;text-align:center;vertical-align:bottom;font-size:11px}.hm td{padding:0;border-bottom:2px solid #fff}
+.hm td.nm{padding:6px 10px;font-weight:600;font-size:12px;white-space:normal;cursor:pointer;max-width:130px;min-width:90px;word-break:break-word}
+.hm td.rk{padding:6px 8px;color:var(--muted);font-size:11px;text-align:center}
+.hm .cell{margin:2px;border-radius:5px;padding:8px 6px;font-weight:700;font-size:12px;text-align:center;color:#23303d;cursor:pointer}
+.hm tr.sel td.nm{font-weight:800}.hm tr.sel{outline:2px solid #1f2733;outline-offset:-2px}
+.hm td.tot .cell{color:#fff;background:#3a4350}
+.ls-legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.lschip{display:inline-flex;align-items:center;gap:7px;border:1px solid #ecd6d6;background:#fdf4f4;color:#6f3636;border-radius:18px;padding:4px 11px 4px 4px;font-size:12px;cursor:pointer;font-weight:600;transition:opacity .1s}
+.lschip b{background:#e06464;color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex:none}
+.lschip .lt{color:#b06a6a;font-weight:800;font-variant-numeric:tabular-nums}
+.lschip.active{background:#e06464;color:#fff;border-color:#e06464}
+.lschip.active b{background:#fff;color:#e06464}
+.lschip.active .lt{color:#ffe0e0}
+.lschip.dim{opacity:.38}
+.qqctrl{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:4px 0 14px}
+.qqctrl-grp{display:flex;align-items:center;gap:8px}
+.qqctrl-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700}
+.ptog{display:inline-flex;align-items:center;gap:6px;border:1px solid #c7ced8;background:#fff;border-radius:18px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;color:#9aa2ad}
+.ptog .dot{opacity:.3}
+.ptog.active{color:var(--ink);border-color:#aab4c0;background:#f4f7fa}
+.ptog.active .dot{opacity:1}
+.qqrow{display:grid;grid-template-columns:190px 1fr;gap:12px;align-items:center;padding:6px 6px;cursor:pointer;border-bottom:1px solid #f1f3f5;border-radius:6px}
+.qqrow:hover{background:#fafbfc}
+.qqrow.sel{background:#eef5fb;outline:1px solid #cfe0f0}
+.qqnum{font-size:10px;color:#b3bac3;font-weight:700;margin-right:4px}
+.qqname{font-size:12px;text-align:right;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qqrow.sel .qqname{font-weight:800;color:var(--ink)}
+.qqbars2{display:flex;flex-direction:column;gap:4px}
+.qqbar{display:flex;align-items:center;gap:8px}
+.qqbar .tag{font-size:10px;font-weight:800;width:20px;flex:none;text-align:center}
+.qqbar .track{flex:1;height:12px;background:#eef0f3;border-radius:5px;overflow:hidden}
+.qqbar .track i{display:block;height:100%;border-radius:5px}
+.qqbar .val{font-size:11px;font-weight:700;width:60px;text-align:right;flex:none;font-variant-numeric:tabular-nums}
+.qqbar .val small{color:#aab0b9;font-weight:600;font-size:9px}
+@media(max-width:680px){.qqrow{grid-template-columns:120px 1fr}}
+.ls-cmp-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:10px}
+.ls-cmp-head select{font-size:12px;font-weight:700;padding:6px 9px;min-width:120px}
+.own-legend{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.own-swatch{display:inline-block;width:12px;height:12px;border-radius:3px;background:#fdeeee;border:1px solid #f1cccc}
+td.lcell,th.lcell{text-align:left}
+.cmpv{font-size:11px;color:var(--muted);font-weight:600}
+.ownrow{background:#fdf3f3}
+.ownrow:hover{background:#fbeaea}
+.ownrow td.sport{font-weight:800}
+.ownrow td{border-bottom-color:#f3dede}
+.ownv{font-size:11px;color:#c44d4d;font-weight:700}
+.ownmark{color:#e06464;font-size:9px;vertical-align:middle}
+.rmx{cursor:pointer;color:#b04a4a;font-weight:800;font-size:13px}
+.cmpdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.cbar-row.iscmp .nm,.qqrow.iscmp .qqname{font-weight:800;color:var(--ink)}
+.cbar-row.iscmp,.qqrow.iscmp{outline:2px solid var(--cc);outline-offset:-2px;border-radius:6px}
+.hm tr.cmprow td.nm{font-weight:700}
+.note{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5}
+.foot{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+
+/* ---------- deep-dive modal ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(15,20,30,.55);display:none;align-items:flex-start;justify-content:center;padding:28px 16px;z-index:50;overflow:auto}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:12px;max-width:780px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.35);overflow:hidden}
+.modal .mh{padding:15px 20px;border-top:5px solid;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.modal .mh .mt{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.modal .mh h3{margin:2px 0 0;font-size:18px;font-weight:800}
+.close{border:none;background:#eef0f3;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:17px;font-weight:700;color:#444;flex:none}.close:hover{background:#e2e6ec}
+.mb{padding:16px 20px 22px;max-height:76vh;overflow:auto}
+.logic{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.logic .b{text-align:center;min-width:78px}.logic .b .k{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.logic .b .v{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}.logic .op{font-size:18px;color:#aab0b9;font-weight:800}
+.logic .kat{align-self:center;margin-left:auto}
+.sub-h{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:800;margin:18px 0 9px}
+.blist .bi{display:grid;grid-template-columns:minmax(120px,1fr) 160px 64px;align-items:center;gap:10px;margin:6px 0}
+.blist .bi-cur{background:#fff3f3;border-radius:5px;padding:2px 5px;font-weight:700}
+.blist .bn{font-size:13px}
+.blist .bt{height:15px;border-radius:5px;background:#eef0f3;overflow:hidden}.blist .bt i{display:block;height:100%;border-radius:5px}
+.blist .bv{font-size:12px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.na{color:#aab0b9;font-style:italic}
+.infobox{background:#fff8e9;border:1px solid #f0e2bd;color:#856a25;border-radius:9px;padding:11px 13px;font-size:12px;line-height:1.5}
+.dist{margin-top:4px}
+.sportsel{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
+.sportsel .sp{border:1px solid #c7ced8;background:#fff;border-radius:16px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted)}
+.sportsel .sp.active{background:var(--red);color:#fff;border-color:transparent}
+.colchart{display:flex;align-items:flex-end;gap:7px;height:170px;padding:6px 2px 0;border-bottom:2px solid var(--line);overflow-x:auto}
+.colchart .col{flex:1;min-width:30px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;cursor:pointer}
+.colchart .col .bar2{width:70%;max-width:34px;border-radius:5px 5px 0 0;background:var(--red);transition:opacity .1s}
+.colchart .col.sel .bar2{outline:2px solid #1f2733;outline-offset:1px}
+.colchart .col .cv{font-size:11px;font-weight:800;margin-bottom:3px}
+.collabels{display:flex;gap:7px;padding-top:6px}
+.collabels .cl{flex:1;min-width:30px;text-align:center;font-size:10px;color:var(--muted);line-height:1.15;word-break:break-word}
+@media(max-width:880px){.grid4{grid-template-columns:1fr 1fr}.split{grid-template-columns:1fr}.cbar-row{grid-template-columns:130px 1fr 48px}select{min-width:220px}.blist .bi{grid-template-columns:minmax(90px,1fr) 90px 56px}}
+@media(max-width:560px){.grid4{grid-template-columns:1fr}.head{flex-direction:column}}
+/* === TOP-LEVEL TABS === */
+.top-tabs{display:flex;gap:0;border-bottom:2px solid var(--line);margin-bottom:24px}
+.top-tab{background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;padding:11px 22px;font-size:15px;font-weight:700;cursor:pointer;color:var(--muted);transition:color .15s;letter-spacing:-.1px}
+.top-tab.active{color:var(--green);border-bottom-color:var(--green)}
+.top-tab:hover:not(.active){color:var(--ink)}
+/* === SIMULATOR === */
+.sim-pots{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:0 0 20px}
+@media(max-width:900px){.sim-pots{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.sim-pots{grid-template-columns:1fr 1fr}}
+.pot-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;border-top:3px solid var(--green);display:flex;flex-direction:column;gap:5px}
+.pot-card[data-pot=bs]{border-top-color:var(--yellow)}
+.pot-card[data-pot=sp]{border-top-color:var(--blue)}
+.pot-card[data-pot=ls]{border-top-color:var(--red)}
+.pot-card[data-pot=ew]{border-top-color:#9b59b6}
+.pot-hd{display:flex;justify-content:space-between;align-items:flex-start}
+.pot-lbl{font-weight:800;font-size:12px;color:var(--ink)}
+.pot-pct{font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);border-radius:4px;padding:2px 7px;font-variant-numeric:tabular-nums}
+.pot-amt{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.pot-amt small{font-size:10px;font-weight:700;color:var(--muted)}
+.pot-slider{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--line);outline:none;cursor:pointer;margin:2px 0}
+.pot-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--green);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.pot-card[data-pot=bs] .pot-slider::-webkit-slider-thumb{background:var(--yellow)}
+.pot-card[data-pot=sp] .pot-slider::-webkit-slider-thumb{background:var(--blue)}
+.pot-card[data-pot=ls] .pot-slider::-webkit-slider-thumb{background:var(--red)}
+.pot-card[data-pot=ew] .pot-slider::-webkit-slider-thumb{background:#9b59b6}
+.pot-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--green);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.pot-card[data-pot=bs] .pot-slider::-moz-range-thumb{background:var(--yellow)}
+.pot-card[data-pot=sp] .pot-slider::-moz-range-thumb{background:var(--blue)}
+.pot-card[data-pot=ls] .pot-slider::-moz-range-thumb{background:var(--red)}
+.pot-card[data-pot=ew] .pot-slider::-moz-range-thumb{background:#9b59b6}
+.pot-ppt{font-size:11px;color:var(--muted);font-weight:600;border-top:1px solid var(--line);padding-top:5px;margin-top:2px}
+.sim-total-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 16px;margin-bottom:20px;gap:14px;flex-wrap:nowrap}
+.sim-total-bar .t{font-weight:600;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.sim-total-bar .v{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.sim-info-wrap{position:relative;margin-left:auto;flex-shrink:0}
+.sim-info-icon{font-size:15px;color:var(--muted);cursor:help;outline:none;background:none;border:none;padding:2px 4px;display:flex;align-items:center}
+.sim-info-tip{display:none;position:absolute;right:0;top:calc(100% + 6px);background:#1f2733;color:#e5e7eb;font-size:11px;line-height:1.6;padding:10px 14px;border-radius:7px;width:400px;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.2);white-space:normal;font-style:normal;font-weight:400;pointer-events:none}
+.sim-info-icon:hover .sim-info-tip,.sim-info-icon:focus .sim-info-tip{display:block}
+.sim-ctrl{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.sim-ctrl label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.sim-ctrl select{min-width:auto;font-size:13px;padding:6px 10px;font-weight:600}
+#sim-table-wrap{height:360px;overflow-y:auto;border:1px solid #e2e5ea;border-radius:8px}
+.sim-table{width:100%;border-collapse:collapse;font-size:11px}
+.sim-table th{padding:6px 8px;text-align:right;font-weight:700;font-size:10px;color:var(--muted);border-bottom:2px solid var(--line);white-space:nowrap;cursor:pointer;-webkit-user-select:none;user-select:none;position:sticky;top:0;background:#fff;z-index:2}
+.sim-table th:nth-child(2){text-align:left}
+.sim-table th.sort-active::after{content:' ↓';color:var(--ink)}
+.sim-table td{padding:5px 8px;text-align:right;border-bottom:1px solid #f0f2f5;font-variant-numeric:tabular-nums}
+.sim-table td.nm{text-align:left;font-weight:600}
+.sim-table tr:hover td{background:#f8fafb}
+.sim-table .rk{color:var(--muted);font-size:10px;font-weight:700;min-width:24px;text-align:center}
+.sim-table td.tot{font-weight:800}
+.sim-table tr.hl td{background:#fff5d6 !important}
+.sim-reset{font-size:12px;font-weight:700;background:none;border:1px solid #c7ced8;border-radius:6px;padding:5px 12px;cursor:pointer;color:var(--muted)}
+.sim-reset:hover{background:#f0f3f7}
+.sim-dl-btn{font-size:12px;font-weight:700;background:none;border:1px solid #c7ced8;border-radius:6px;padding:5px 12px;cursor:pointer;color:var(--muted)}
+.sim-dl-btn:hover{background:#f0f3f7}
+.sim-logic-btn{border-color:#9b59b6;color:#7d3e96}
+.sim-logic-btn:hover{background:#f5eeff}
+/* Logic modal */
+.logic-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center}
+.logic-modal-bg.open{display:flex}
+.logic-modal{background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.22);width:min(820px,95vw);max-height:88vh;overflow:auto;padding:28px 30px}
+.logic-modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.logic-modal-hd h3{font-size:16px;font-weight:800;color:#1f2733;margin:0}
+.logic-modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#888;line-height:1;padding:2px 6px}
+.logic-modal-close:hover{color:#333}
+.logic-section{margin-bottom:22px}
+.logic-section-hd{font-size:13px;font-weight:800;margin-bottom:8px;padding:6px 10px;border-radius:6px}
+.logic-table{width:100%;border-collapse:collapse;font-size:12px}
+.logic-table th{text-align:left;font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;padding:4px 8px;border-bottom:2px solid var(--line)}
+.logic-table td{padding:4px 8px;border-bottom:1px solid #f0f0f0;font-variant-numeric:tabular-nums}
+.logic-table tr:hover td{background:#fafafa}
+.logic-table .kat-cur{font-weight:800}
+.logic-formula{font-size:11.5px;color:var(--muted);background:#f7f8fa;border-radius:6px;padding:8px 12px;margin-top:8px;line-height:1.7;font-family:monospace}
+.sim-table td.pct-col{font-size:9px;color:var(--muted);padding:5px 4px 5px 3px;min-width:32px;vertical-align:middle}
+.sim-table th.pct-col{font-size:9px;padding:6px 6px 6px 2px;color:var(--muted)}
+.sim-table tr.tot-row td{border-top:2px solid var(--line);border-bottom:none;font-weight:700;background:#f8fafb}
+.sim-table tr.tot-row td.pct-col{font-weight:400}
+.pct-chip{display:inline-block;background:#eef0f3;border-radius:3px;padding:1px 4px;font-size:9px;color:var(--muted);font-weight:600;white-space:nowrap}
+#sim-table-wrap{border-radius:8px 8px 0 0 !important}
+#sim-foot-outer{border:1px solid #e2e5ea;border-top:none;border-radius:0 0 8px 8px;overflow:hidden}
+#sim-foot-outer .sim-table td{border-bottom:none}
+#sim-foot-outer .sim-table tr:first-child td{border-top:2px solid var(--line)}
+.sim-lock-lbl{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap}
+/* ── Neue Sportart Tab ── */
+.ns-panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:16px}
+.ns-config{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.ns-field{display:flex;flex-direction:column;gap:5px}
+.ns-field .ns-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+.ns-field input[type=text]{font-size:14px;font-weight:700;padding:7px 11px;border:1px solid #c7ced8;border-radius:8px;color:var(--ink);background:#fff;width:160px}
+.ns-field select{font-size:13px;font-weight:600;padding:7px 11px;border:1px solid #c7ced8;border-radius:8px;background:#fff;color:var(--ink);cursor:pointer;min-width:200px}
+.ns-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:16px}
+.ns-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.ns-card-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+.ns-card-before{font-size:11px;color:var(--muted);margin-bottom:2px}
+.ns-card-after{font-size:14px;font-weight:700;margin-bottom:6px}
+.ns-card-delta{font-size:22px;font-weight:800}
+.ns-card-note{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.4}
+.ns-total{display:flex;background:#1f2733;border-radius:10px;padding:18px 22px;align-items:center;gap:24px;flex-wrap:wrap;margin-top:4px}
+.ns-total .t-lbl{font-size:11px;font-weight:800;color:#6ee7b7;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.ns-total .t-val{font-size:30px;font-weight:800;color:#fff}
+.ns-total .t-break{margin-left:auto;text-align:right;color:#9ca3af;font-size:12px;line-height:1.8}
+.ns-scorerow{display:flex;gap:20px;flex-wrap:wrap;align-items:center;padding:12px 16px;background:#f8fafb;border-radius:8px;border:1px solid #eef0f3;margin-bottom:14px}
+.ns-scorerow .si-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+.ns-scorerow .si-val{font-size:15px;font-weight:800}
+.sim-lock-lbl input{accent-color:var(--green);cursor:pointer}
+.pot-pct-wrap{display:flex;align-items:center;gap:1px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:2px 6px}
+.pot-ctrl{display:flex;align-items:center;gap:5px}
+.pot-arrows{display:flex;flex-direction:column;gap:2px}
+.pot-arrow{width:18px;height:13px;border:1px solid #d0d4da;border-radius:3px;background:#f4f5f7;cursor:pointer;font-size:9px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;color:#555;transition:background .1s}
+.pot-arrow:hover{background:#e2e5ea;border-color:#b0b6be}
+.pot-arrow:active{background:#d0d4da}
+.pot-amt-row{display:flex;align-items:center;gap:7px}
+.pot-arrow-h{width:22px;height:22px;border:1px solid #d0d4da;border-radius:4px;background:#f4f5f7;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;color:#555;flex-shrink:0;transition:background .1s}
+.pot-arrow-h:hover{background:#e2e5ea;border-color:#b0b6be}
+.pot-arrow-h:active{background:#d0d4da}
+.pot-pct-inp{width:34px;border:none;background:none;font-size:11px;font-weight:700;color:var(--muted);text-align:right;outline:none;padding:0;-moz-appearance:textfield}
+.pot-pct-inp::-webkit-inner-spin-button,.pot-pct-inp::-webkit-outer-spin-button{-webkit-appearance:none}
+.pot-pct-inp:focus{color:var(--ink)}
+.pot-pct-unit{font-size:11px;font-weight:700;color:var(--muted)}
+.sim-reserve-box{text-align:center}
+.sim-reserve-val{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.sim-reserve-val.res-ok{color:var(--green)}
+.sim-reserve-val.res-pos{color:var(--yellow)}
+.sim-reserve-val.res-neg{color:var(--red)}
+.opt-chip{display:inline-flex;align-items:center;gap:2px;margin:2px 4px 2px 0;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:700}
+.opt-chip.up{background:#eef7ee;color:#2d7a45}
+.opt-chip.dn{background:#fbecea;color:#b03030}
+.opt-chip.nc{background:#f0f0f0;color:#777}
+.delta-th{color:var(--muted);white-space:nowrap}
+.delta-pos{color:var(--green);font-weight:600;white-space:nowrap}
+.delta-neg{color:var(--red);font-weight:600;white-space:nowrap}
+.delta-zero{color:var(--muted)}
+/* ---- LOGIN OVERLAY ---- */
+#login-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000}
+#login-overlay.hidden{display:none}
+.login-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:36px 40px;max-width:380px;width:100%;box-shadow:0 8px 40px rgba(20,30,50,.14)}
+.login-logo{text-align:center;margin-bottom:26px;line-height:1.1}
+.login-logo .rings{font-size:10px;letter-spacing:2px;color:#aab0b9;margin-bottom:6px}
+.login-logo .swol b{color:#e2001a;font-weight:900;font-size:16px}
+.login-logo .swol{font-weight:800;font-size:16px}
+.login-logo .swol em{font-style:italic;font-weight:700;font-size:22px}
+.login-logo small{color:var(--muted);font-size:9px;display:block;margin-top:3px}
+.login-title{text-align:center;font-size:18px;font-weight:800;margin:0 0 5px;color:var(--ink)}
+.login-sub{text-align:center;font-size:12px;color:var(--muted);margin:0 0 26px;line-height:1.5}
+.login-field{position:relative;margin-bottom:14px}
+.login-field input{width:100%;padding:11px 42px 11px 14px;border:1.5px solid #c7ced8;border-radius:8px;font-size:15px;outline:none;color:var(--ink);font-family:inherit;background:#fff;transition:border-color .15s,box-shadow .15s}
+.login-field input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(74,155,94,.12)}
+.login-eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);padding:2px;line-height:1;display:flex;align-items:center;justify-content:center}
+.login-eye:hover{color:var(--ink)}
+.login-btn{width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:background .15s;margin-top:2px}
+.login-btn:hover{background:#3d8a50}
+.login-btn:active{background:#327440}
+.login-err{color:#c44d4d;font-size:12px;font-weight:700;margin-top:10px;min-height:18px;text-align:center}
+.login-divider{border:none;border-top:1px solid var(--line);margin:22px 0 18px}
+</style>
+</head>
+<body>
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div class="login-card">
+    <h2 class="login-title">Standortbestimmung Verbandsförderung</h2>
+    <p class="login-sub">Bitte Passwort eingeben um auf das Dashboard zuzugreifen.</p>
+    <div class="login-field">
+      <input type="password" id="login-pw" placeholder="Passwort" autocomplete="current-password">
+      <button class="login-eye" id="login-eye-btn" onclick="toggleLoginPw()" tabindex="-1" title="Passwort anzeigen/verbergen">
+        <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Anmelden →</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+<div class="wrap">
+  <div class="top-tabs">
+    <button class="top-tab active" id="tt-standort" onclick="switchTab('standort')">Standortbestimmung</button>
+    <button class="top-tab" id="tt-simulator" onclick="switchTab('simulator')">Förder-Simulator</button>
+    <button class="top-tab" id="tt-newsport" onclick="switchTab('newsport')">Sportart-Simulator</button>
+  </div>
+  <div id="tab-standort">
+  <div class="head">
+    <div>
+      <h1>Standortbestimmung neue Verbandsförderung</h1>
+      <div><span class="sub">Pilotbewertung | Stand: 23.06.2026</span></div>
+    </div>
+    <div class="logo" id="main-logo"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIGJ5IE1hcnN1cGlsYW1pIC0tPgo8c3ZnCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgdmVyc2lvbj0iMS4xIgogICB3aWR0aD0iMTAyNCIKICAgaGVpZ2h0PSIyMzciCiAgIHZpZXdCb3g9Ii0wLjg5NjcxNjQxIC0wLjg5NjcxNjQxIDEzNi42ODQxMzI4MiAzMS42ODM5Nzk4MiIKICAgaWQ9InN2ZzExOTg3Ij4KICA8ZGVmcwogICAgIGlkPSJkZWZzMTE5ODkiIC8+CiAgPHBhdGgKICAgICBkPSJNIDQ1LjE2NzM3Myw0LjUwMzU5NjIgNDQuODU0MjYxLDQuMzQ0MDIwNSA0NC41NDExNDgsNC4yNjQ0NzE4IDQ0LjMwNjM3Myw0LjAyNTM0NzUgNDQuMDcxNjc2LDMuNzg2MzAyOCA0My45MTUyMzcsMy40NjczOTA2IDQzLjc1ODU2MywzLjE0ODQ3ODUgbCAwLC0wLjM5ODQ2MDkgMC4wNzgzNCwtMC40NzgyNDg4IDAuMDc4MzQsLTAuNTU3OTU2OCAwLjIzNDc3NSwtMC40NzgyNDg3IDAuMzEzMDM0LC0wLjM5ODcwMDA0IDAuMzkxMjE1LC0wLjMxODY3MzA2IDAuNDY5NTUxLC0wLjIzOTEyNDM2IDAuNDY5NTUxLC0wLjE1OTU3NTY2IDAuNTQ3ODA5LC0wLjA3OTU0ODcgMC4zMTMxMTIsMCAwLjM5MTIxNSwwLjA3OTU0ODcgMC4zMTMxMTIsMC4xNTk1NzU2NiAwLjIzNDc3NSwwLjIzOTEyNDM2IDAuMjM0Nzc2LDAuMjM5MTI0MzYgMC4xNTYzNiwwLjMxODkxMjE0IDAuMDc4NDEsMC4zMTg2NzMxIDAsMC4zMTg5MTIyIDAsMC41NTc5NTY4IC0wLjE1Njc1MSwwLjU1ODAzNjYgLTAuMjM0Njk4LDAuNDc4MjQ4NyAtMC4zMTI4NzcsMC4zOTg0NjA5IC0wLjM5MTQ0OSwwLjMxODgzMjUgLTAuMzkxMjE0LDAuMjM5MTI0MyAtMC41NDc4MSwwLjE1OTMzNjYgLTAuNDY5NTUxLDAuMDc5Nzg4IC0wLjM5MTIxNCwwIHoiCiAgICAgaWQ9InBhdGg5NDA2IgogICAgIHN0eWxlPSJmaWxsOiNlMzAwMWI7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiIC8+CiAgPHBhdGgKICAgICBkPSJtIDM4LjUxNTMyMiwyOS41MzE3ODYgNC4zMDQxMzksLTIwLjU2NDUzNTUgMy40NDMzNzQsMCAtNC4zMDQxMzksMjAuNTY0NTM1NSAtMy40NDMzNzQsMCB6IgogICAgIGlkPSJwYXRoOTQyNiIKICAgICBzdHlsZT0iZmlsbDojZTMwMDFiO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIiAvPgogIDxwYXRoCiAgICAgZD0ibSAyOC4xMDY4MjQsMjkuNTMxNzg2IC0wLjc4MjQyOCwtMTMuMzkwODg0IC0wLjE1NjY3NCwtMi4zMTE2MTYgMCwtMS43NTM1NzggLTAuNzgyNTg1LDEuODMzMzY2IC0xLjA5NTU0MSwyLjMxMTYxNSAtNi40OTU1MzQsMTMuMzExMDk3IC0yLjM0NzY3NiwwIC0wLjMxMzExMiwtMjAuNTY0NTM1NSAyLjM0NzkxMSwwIC0wLjA3ODM0LDEyLjgzMjg0NzUgLTAuMDc4MzQsNC40NjM2NTUgMC44NjA5MjIsLTEuOTkyNzAzIDEuMTczODc4LC0yLjM5MTE2NCA2LjI2MDYwMSwtMTIuOTEyNjM1NSAyLjUwNDI3MiwwIDAuNzA0MzI3LDEyLjkxMjYzNTUgMC4wNzgzNCwyLjQ3MDk1MiAwLjA3ODM0LDEuODMzMzY2IDAuNzA0MzI2LC0xLjgzMzM2NiAxLjAxNzM2MSwtMi41NTA3NCA1LjQ3NzkzOCwtMTIuODMyODQ3NSAyLjM0NzkxMiwwIC04Ljk5OTg4NSwyMC41NjQ1MzU1IC0yLjQyNjAxMywwIHoiCiAgICAgaWQ9InBhdGg5NDM4IgogICAgIHN0eWxlPSJmaWxsOiNlMzAwMWI7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiIC8+CiAgPHBhdGgKICAgICBkPSJtIDUuNDExOTM3NywyOS44NTA2OTkgLTAuNzgyNjYzMywwIEwgMy44NDY5MjQyLDI5Ljc3MDkxMSAzLjE0MjM2MjksMjkuNjExNTc1IDIuNDM4MTE0NywyOS4zNzI0NSAxLjczMzc4ODIsMjguOTc0MDY5IDEuMTA3Nzk4NSwyOC41NzUzNjkgMC41NTk5MTA3LDI4LjAxNzMzMyAwLjA5MDM1OTcsMjcuMzc5NzQ3IDAuMDEyMTAxMiwyNy4yMjA0OSBsIDEuMDk1Njk3MywtMS4wMzYyODUgMC4xNTY0Mzg3LDAuMjM5MTI1IDAuMzEzMTEyMywwLjU1ODAzNiAwLjM5MTIxNDIsMC40NzgxNjkgMC40Njk1NTEsMC4zMTg2NzMgMC41NDc4MDk1LDAuMzE4OTEyIDAuNTQ3ODg3OCwwLjIzOTEyNSAwLjYyNTk4OTcsMC4wNzk3OSAwLjU0NzgwOTUsMC4wNzk3OSAwLjcwNDMyNjUsMC4wNzk1NSAwLjg2MDkyMTgsLTAuMDc5NTUgMC44NjA3NjUyLC0wLjIzOTM2MyAwLjg2MDkyMTgsLTAuMzE4NjczIDAuNzA0MzI2NSwtMC41NTgwMzcgMC41NDc2NTI5LC0wLjU1Nzk1NyAwLjMxMzExMjMsLTAuMzk4NDYgMC4xNTY1OTUzLC0wLjM5ODcgMC4xNTY0Mzg3LC0wLjM5ODQ2MSAwLjE1NjUxNjgsLTAuMzk4MzgyIDAuMDc4MjYsLTAuNDc4MjQ4IDAsLTAuNTU4MDM3IC0wLjA3ODI2LC0wLjc5NzA4MSBMIDkuODcyNjcyMiwyMi42NzcwNDggOS41NTk2MzgyLDIyLjAzOTIyNCA5LjE2ODQyNCwyMS40ODE1MDYgOC42MjA1MzYyLDIwLjkyMzQ2OSA3Ljk5NDU0NjUsMjAuMzY1NDMzIDYuNjY0MDczNywxOS4zMjkyMjcgNS4zMzM2MDA5LDE4LjI5Mjk0MiA0Ljc4NTk0OCwxNy42NTUzNTcgNC4yMzgwNjAyLDE3LjA5NzQgMy43Njg1ODc1LDE2LjM4MDAyNyAzLjM3NzEzODQsMTUuNjYyNjU0IDMuMjIwNjk5NywxNC44NjU1NzIgMy4wNjQyNjEsMTMuOTA5MDc1IDMuMTQyMzYzLDEzLjM1MTExOCAzLjIyMDcsMTIuNzkzMzIxIDMuMzc3MTM4NywxMi4yMzUyODQgMy42MTE5MTQyLDExLjY3NzI0OCAzLjg0NjkyNDUsMTEuMTk5MDc5IDQuMTU5ODAyLDEwLjgwMDYxOCA0LjU1MTE3MjgsMTAuNDAxOTE4IDQuOTQyMzg3LDEwLjAwMzQ1NyA1LjMzMzYwMTIsOS42ODQ1NDQ2IDUuODAzMzg3LDkuMzY1NzEyMiA2LjI3Mjg1OTgsOS4xMjY1ODc4IDYuNzQyNDEwOCw4Ljk2NzI1MTMgNy44Mzc5NTE1LDguNjQ4MzM5MSBsIDEuMDk1Njk3MywtMC4wNzk3ODggMC43MDQyNDgyLDAgMC43MDQzMjYsMC4wNzk3ODggMC42MjU5OSwwLjE1OTU3NTYgMC43MDQ0ODMsMC4yMzkxMjQ0IDAuNjI1OTksMC4zMTg2NzMxIDAuNTQ3ODg3LDAuMzk4NyAwLjQ2OTU1MSwwLjU1NzcxNzggMC40Njk0NzMsMC41NTgwMzYgMC4wNzgzNCwwLjE1OTU3NiAtMS4wOTU2OTcsMC45NTY0MTggLTAuMDc4MzQsLTAuMjM5MDQ1IC0wLjMxMjg3OCwtMC40NzgyNDkgLTAuMzkxMzcsLTAuMzk4NyAtMC40Njk1NTEsLTAuMzE4OTEyIC0wLjQ2OTU1MSwtMC4zMTg2NzMgLTAuNDY5NTUxLC0wLjE1OTU3NSAtMC41NDc4MSwtMC4xNTkzMzcgLTAuNTQ3ODg3MywtMC4wNzk3ODggLTAuNTQ3NjUyOSwwIC0wLjg2MDkyMTgsMC4wNzk3ODggLTAuNzgyNjYzMywwLjE1OTMzNyAtMC43ODI0Mjg0LDAuMzE4OTEyIC0wLjYyNjE0NjMsMC40NzgyNDggLTAuNTQ3ODg3OCwwLjU1ODAzNyAtMC4zOTEyMTQyLDAuNzE3MjkzIC0wLjIzNDc3NTUsMC43MTczNzMgLTAuMDc4MzM3LDAuNDc4MjQ5IDAsMC40NzgxNjkgMCwwLjYzNzgyNSAwLjE1NjY3MzYsMC42Mzc1ODUgMC4yMzQ3NzU1LDAuNTU3OTU3IDAuMzkxMjE0MiwwLjQ3ODI0OCAwLjM5MTQ0OSwwLjQ3ODI0OSAwLjU0NzY1MywwLjQ3ODI0OSAxLjE3Mzc5OTIsMS4wMzYyMDUgMS40ODY5MTE1LDEuMTE2MDczIDAuNzA0NDgzMSwwLjYzNzUwNiAwLjYyNTk4OTQsMC43MTczNzMgMC41NDc4ODgsMC43MTczNzMgMC4zOTEyMTQsMC43OTcwODEgMC4xNTY2NzQsMC40NzgyNDkgMC4xNTYzNiwwLjQ3ODI0OSAwLjA3ODM0LDAuNDc4MTY5IDAsMC41NTgwMzYgLTAuMDc4MzQsMC42Mzc4MjUgLTAuMDc4MjYsMC42Mzc1MDUgLTAuMTU2NDM5LDAuNTU4MDM3IC0wLjIzNDc3NiwwLjU1ODAzNiAtMC4zMTMxMTIsMC41NTc3OTggLTAuMzEzMTEyLDAuNDc4MTY5IC0wLjM5MTIxNCwwLjM5ODcgLTAuMzkxMjE0NCwwLjM5ODQ2MSAtMC40Njk3MDc2LDAuMzE4OTEyIC0wLjQ2OTU1MSwwLjMxODkxMiAtMC41NDc2NTI5LDAuMzE4NTkzIC0wLjU0Nzg4NzgsMC4xNTk1NzYgLTAuNTQ3ODA5NSwwLjIzOTEyNCAtMC41NDc4ODc4LDAuMDc5NTUgLTAuNjI1OTg5NywwLjA3OTc5IC0wLjU0NzgwOTUsMCB6IgogICAgIGlkPSJwYXRoOTQ1MCIKICAgICBzdHlsZT0iZmlsbDojZTMwMDFiO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIiAvPgogIDxwYXRoCiAgICAgZD0ibSA1Mi4zNjY5OTksMjkuODUwNjk5IC0xLjY0MzM1LDAgLTEuNTY1MjQ5LC0wLjIzOTEyNCAtMC43ODI0MjgsLTAuMjM5MTI1IC0wLjc4MjY2MywtMC4yMzkwNDQgLTAuNzA0MjQ4LC0wLjIzOTEyNSAtMC43MDQzMjcsLTAuMzk4NDYxIDEuNzk5Nzg5LC0zLjkwNTg1NyAwLjkzOTEwMiwwLjU1ODAzNyAxLjAxNzM2LDAuMzk4MzgxIDEuMDk1Njk4LDAuMzE4OTEyIDAuNjI1OTg5LDAuMDc5NzkgMC41NDc4ODgsMCAwLjU0Nzg4OCwwIDAuNTQ3NjUzLC0wLjA3OTc5IDAuNDY5NDczLC0wLjE1OTMzNyAwLjQ2OTc4NiwtMC4yMzkwNDQgMC4zOTEyMTQsLTAuMjM5MTI1IDAuMzEzMDM0LC0wLjM5ODcgMC4xNTY0MzgsLTAuNDc4MjQ4IDAuMDc4MzQsLTAuNTU4MDM3IDAsLTAuMzk4MzgxIC0wLjE1NjU5NSwtMC4zMTg5MTIgLTAuMTU2NTE3LC0wLjM5ODQ2MSAtMC4zMTMwMzQsLTAuMzE4OTEyIC0wLjMxMjg3NywtMC4zOTg0NjEgLTAuNDY5Nzg2LC0wLjM5ODcgLTEuMjUxOTAxLC0wLjc5Njg0MiAtMS4yNTIyMTUsLTAuOTU2NzM3IC0wLjYyNjE0NiwtMC41NTc3MTggLTAuNTQ3NjUzLC0wLjU1ODAzNiAtMC40Njk3MDcsLTAuNjM3ODI0IC0wLjM5MTI5MywtMC43OTY4NDMgLTAuMjM0Nzc2LC0wLjg3Njk0OCAtMC4wNzgyNiwtMC45NTY0MTggMCwtMC43MTczNzMgMC4xNTY2NzQsLTAuNzE3MzczIDAuMTU2MzYsLTAuNzE3Mjk0IDAuMjM0Nzc1LC0wLjYzNzgyNCAwLjIzNDc3NiwtMC41NTgwMzYgMC4zOTE0NDksLTAuNjM3NTA2IDAuMzkxMjE0LC0wLjQ3ODI0OSAwLjQ2OTQ3MywtMC40NzgyNDggMC40Njk1NTEsLTAuMzk4NyAwLjYyNjIyNSwtMC4zOTg0NjE0IDAuNjI1OTg5LC0wLjMxODgzMjQgMC43MDQyNDksLTAuMzE4NjczMSAwLjcwNDMyNiwtMC4yMzkxMjQ0IDAuNzgyNTg1LC0wLjE1OTU3NTYgMC44NjEsLTAuMDc5Nzg4IDAuODYwNzY1LDAgMS41NjUyNDksMC4wNzk3ODggMS40MDg1NzQsMC4yMzkxMjQzIDAuNzA0MzI3LDAuMTU5NTc1NyAwLjYyNTk4OSwwLjIzOTEyNDQgMC43MDQ0ODQsMC4yMzkxMjQzIDAuNjI1OTg5LDAuMzE4NTkzNCAtMS43MjE2ODcsMy43NDYyODE4IC0wLjg2MDc2NSwtMC40NzgxNjkgLTAuOTM5MjU5LC0wLjM5ODQ2MSAtMS4wOTU1NCwtMC4yMzkxMjQgLTEuMDk1Njk4LC0wLjA3OTc5IC0wLjcwNDMyNiwwLjA3OTc5IC0wLjYyNTk5LDAuMDc5NTUgLTAuNDY5NDcyLDAuMjM5MzY0IC0wLjM5MTQ1LDAuMjM5MTI0IC0wLjIzNDc3NSwwLjMxODY3MyAtMC4yMzQ3NzYsMC4zMTg4MzMgLTAuMDc4MzQsMC4zMTg5MTIgLTAuMDc4MSwwLjM5ODQ2MSAwLjA3ODEsMC40NzgyNDggMC4yMzUwMSwwLjM5ODcgMC4yMzQ3NzYsMC4zOTgzODIgMC4zMTI4NzcsMC4zOTg0NjEgMC44NjA5MjIsMC42Mzc4MjQgMC43ODI2NjMsMC41NTgwMzYgMS40MDg1NzUsMC45NTY0MTggMC43MDQzMjYsMC41NTgwMzcgMC41NDc4MSwwLjYzNzU4NSAwLjU0NzczMSwwLjcxNzI5MyAwLjM5MTM3MSwwLjc5NzE2MSAwLjE1NjQzOCwwLjM5ODQ2MSAwLjE1NjY3NCwwLjQ3ODE2OSAwLjA3ODEsMC41NTgwMzcgMCwwLjU1ODAzNiAwLDAuNzk3MDgxIC0wLjE1NjQzOSwwLjc5NzE2MSAtMC4yMzQ3NzUsMC43MTczNzMgLTAuMzEzMTEyLDAuNjM3NTA2IC0wLjMxMzAzNSwwLjYzNzgyNCAtMC40Njk1NTEsMC41NTc3OTggLTAuNDY5NTUsMC41NTc5NTcgLTAuNDY5NTUyLDAuNDc4MjQ4IC0wLjYyNTk4OSwwLjM5ODcgLTAuNjI2MTQ3LDAuMzk4NDYxIC0wLjYyNTk4OSwwLjMxODkxMiAtMC43MDQzMjcsMC4yMzkwNDUgLTAuNjI2MTQ2LDAuMTU5MzM3IC0wLjc4MjY2MywwLjE1OTMzNiAtMC43MDQyNDksMC4wNzk3OSAtMC43MDQzMjYsMCB6IgogICAgIGlkPSJwYXRoOTQ3MCIKICAgICBzdHlsZT0iZmlsbDojZTMwMDFiO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIiAvPgogIDxwYXRoCiAgICAgZD0ibSA2OC4xNzUzNzIsMjkuODUwNjk5IC0xLjY0MzU4NSwwIC0xLjY0MzM1LC0wLjIzOTEyNCAtMC44NjA3NjYsLTAuMTU5MzM3IC0wLjc4MjU4NSwtMC4xNTk1NzYgLTAuNzgyNjYzLC0wLjIzOTA0NCAtMC43MDQzMjYsLTAuMzE4NjczIDEuODc4MTI1LC01LjAyMTY5MiAwLjg2MSwwLjQ3ODI0OSAxLjAxNzM2MSwwLjM5ODQ2MSAxLjAxNzIwNCwwLjMxODkxMiAxLjAxNzM2LDAuMDc5NzkgMC41NDc4ODgsLTAuMDc5NzkgMC40Njk1NTEsMCAwLjQ2OTU1MSwtMC4xNTkzMzYgMC4zMTMwMzQsLTAuMTU5NTc2IDAuMzEzMTEyLC0wLjE1OTMzNiAwLjIzNDc3NiwtMC4zMTg5MTMgMC4xNTY0MzksLTAuMzE4OTEyIDAsLTAuMzk4MzgxIDAsLTAuMjM5MTI0IC0wLjA3ODM0LC0wLjMxODkxMyAtMC4yMzQ3NzYsLTAuMjM5MTI0IC0wLjIzNDc3NSwtMC4yMzkxMjQgLTAuNzA0MjQ4LC0wLjU1ODAzNyAtMS4wOTU1NDEsLTAuNzE3MjkzIC0xLjE3NDAzNCwtMC44NzY3MSAtMC42MjU5OSwtMC41NTgwMzYgLTAuNDY5NTUxLC0wLjU1Nzk1NyAtMC40Njk0NzIsLTAuNjM3NTg1IC0wLjM5MTQ1LC0wLjcxNzM3NCAtMC4yMzQ3NzUsLTAuNzk3MDgxIC0wLjA3ODEsLTAuOTU2NDk3IDAuMDc4MSwtMC44NzY4NjkgMC4wNzgzNCwtMC43OTcxNjEgMC4yMzQ3NzUsLTAuNzk2ODQyIDAuMjM0Nzc2LC0wLjcxNzM3MyAwLjM5MTEzNiwtMC42Mzc4MjUgMC4zOTE0NDksLTAuNjM3NTA1IDAuNDY5NTUxLC0wLjU1ODAzNyAwLjU0Nzg4NywtMC40NzgyNDggMC41NDc1NzUsLTAuNDc4MjQ5IDAuNzA0NTYxLC0wLjM5ODcwMDIgMC43MDQzMjcsLTAuMzE4NTkzMyAwLjcwNDI0OCwtMC4yMzkxMjQ0IDAuNzgyNjYzLC0wLjIzOTEyNDQgMC44NjA3NjYsLTAuMTU5NTc1NiAwLjg2MDkyMSwtMC4wNzk3ODggMC44NjA3NjYsMCAxLjcyMTY4NywwLjA3OTc4OCAxLjU2NTI0OCwwLjE1OTU3NTYgMS41NjUwMTMsMC4zOTg0NjA5IDEuNDg2OTEyLDAuNDc4MTY5IC0xLjg3ODEyNiw0Ljg2MjExNTQgLTAuODYwNzY1LC0wLjQ3ODI0OCAtMC45MzkyNTksLTAuMzk4NDYxIC0xLjA5NTQ2MiwtMC4zMTg4MzMgLTEuMDk1Nzc2LC0wLjA3OTU1IC0wLjU0NzgwOSwwLjA3OTU1IC0wLjQ2OTU1MSwwLjA3OTc5IC0wLjM5MTIxNCwwLjE1OTI1NyAtMC4zMTMxMTMsMC4xNTk1NzUgLTAuMTU2NDM4LDAuMjM5MTI1IC0wLjIzNDY5NywwLjIzOTEyNCAtMC4wNzgzNCwwLjIzOTEyNSAwLDAuMjM5MTI0IDAuMDc4MzQsMC4zOTg0NjEgMC4wNzgyNiwwLjMxODkxMiAwLjIzNDc3NSwwLjIzOTA0NSAwLjMxMjg3OCwwLjMxODkxMiAwLjc4MjY2MywwLjU1Nzc5NyAwLjg2MDkyMiwwLjU1ODAzNyAxLjMzMDMxNiwwLjg3Njg2OSAwLjYyNjE0NiwwLjU1ODAzNiAwLjU0NzY1MywwLjYzNzU4NiAwLjQ2OTcwOCwwLjYzNzUwNSAwLjM5MTI5MiwwLjc5NzE2MSAwLjIzNDc3NiwwLjg3Njk0OSAwLjA3ODI2LDAuNDc4MTY5IDAuMDc4MSwwLjQ3ODI0OSAtMC4wNzgxLDAuOTU2NDk3IC0wLjE1NjU5NSwwLjg3NjYzIC0wLjIzNDc3NSwwLjc5NzE2MSAtMC4zMTI5NTYsMC43OTcwODEgLTAuMzkxMzcxLDAuNjM3ODI0IC0wLjU0Nzg4OCwwLjYzNzU4NiAtMC40Njk0NzIsMC41NTc5NTYgLTAuNjI1OTksMC40NzgyNDkgLTAuNjI2MjI1LDAuMzk4NDYxIC0wLjcwNDI0OCwwLjM5ODcgLTAuNzgyNjYzLDAuMjM5MTI0IC0wLjcwNDMyNywwLjIzOTA0NSAtMC43ODI1ODUsMC4yMzkxMjQgLTAuODYwNzY1LDAuMDc5NTUgLTAuNzgyNTg1LDAuMDc5NzkgLTAuODYwNzY1LDAgeiIKICAgICBpZD0icGF0aDk0OTAiCiAgICAgc3R5bGU9ImZpbGw6I2UzMDAxYjtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIgLz4KICA8cGF0aAogICAgIGQ9Im0gMTEyLjcwNDQyLDI5LjUzMTc4NiAtMi42NjA3OSwtNy4zMzI5ODggLTEuMTczOCwxLjY3Mzc5MSAwLDUuNjU5MTk3IC04LjM3Mzc0LDAgMCwtMjguNjk0OTIzMiA4LjM3Mzc0LDAgMCwxNC45MDU1NzgyIDMuOTkxMDMsLTcuMTczODkwNiA5LjkzODk4LDAgLTYuMDI2MDYsOC41Mjg4NDg2IDYuMTgyNSwxMi40MzQzODcgLTEwLjI1MTg2LDAgeiIKICAgICBpZD0icGF0aDk1MTAiCiAgICAgc3R5bGU9ImZpbGw6I2UzMDAxYjtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIgLz4KICA8cGF0aAogICAgIGQ9Im0gODcuNTA1MTgyLDI5Ljg1MDY5OSAtMS43MjE2ODcsMCAtMS43MjE2ODcsLTAuMTU5MzM3IC0xLjcyMTY4NywtMC4yMzkxMjQgLTEuNjQzMzUsLTAuMzk4NjIgMS4wMTcxMjUsLTUuNjU5MTk3IDEuMDE3MzYxLDAuMzk4MzgxIDEuMTc0MTEyLDAuMjM5MTI1IDEuMDk1NDYzLDAuMjM5MTI0IDEuMTczODc3LDAuMDc5NzkgMC40Njk0NzMsLTAuMDc5NzkgMC4zOTE0NDksMCAwLjMxMjg3NywtMC4xNTkzMzcgMC4zMTMxMTMsLTAuMTU5MzM2IDAuMjM0Nzc1LC0wLjE1OTU3NiAwLjE1NjY3NCwtMC4xNTkzMzYgMC4wNzgxLC0wLjIzOTA0NSAwLjA3ODM0LC0wLjMxODkxMiAtMC4wNzgzNCwtMC4zMTg2NzMgLTAuMDc4MSwtMC4yMzkxMjUgLTAuMTU2Njc0LC0wLjIzOTM2MyAtMC4yMzQ3NzUsLTAuMTU5MzM3IC0wLjU0Nzg4OCwtMC4zMTg5MTIgLTAuNTQ3NTc1LC0wLjE1OTMzNiAtMS40ODY5ODksLTAuNDc4MTY5IC0wLjc4MjU4NSwtMC4zMTg5MTMgLTAuNzgyNjY0LC0wLjM5ODQ2IC0wLjc4MjY2MywtMC41NTgwMzcgLTAuNjI1OTEyLC0wLjYzNzUwNiAtMC41NDc4ODcsLTAuNzE3MzczIC0wLjM5MTIxNCwtMC44NzY5NDggLTAuMTU2Njc0LC0wLjQ3ODE2OSAtMC4xNTY0MzksLTAuNDc4MjQ5IC0wLjA3ODM0LC0wLjU1ODAzNyAwLC0wLjU1ODAzNiAwLC0wLjc5Njg0MiAwLjE1Njc1MiwtMC43MTc2MTIgMC4xNTYzNjEsLTAuNzE3Mjk0IDAuMzEzMTEyLC0wLjcxNzM3MyAwLjMxMjg3NywtMC42Mzc1ODUgMC40Njk3ODYsLTAuNjM3NzQ1IDAuNDY5NTUxLC0wLjU1Nzc5NyAwLjU0NzU3NSwtMC41NTgwMzcgMC43MDQ1NjEsLTAuNDc4MTY4OCAwLjcwNDMyNywtMC4zOTg3IDAuNzgyMzUsLTAuMzE4NjczMSAwLjg2MSwtMC4zMTg5MTIyIDAuOTM5MDI0LC0wLjIzOTEyNDQgMC45MzkxMDIsLTAuMTU5NTc1NiAxLjA5NTY5NywtMC4xNTkzMzY1IDEuMDk1NTQxLDAgMS41NjUyNDgsMC4wNzk3ODggMS42NDMzNSwwLjE1OTMzNjUgMS42NDMzNSwwLjIzOTEyNDQgMS43MjE2ODcsMC4zMTg5MTIyIC0wLjkzOTAyMyw1LjI2MDczNTUgLTEuMDk1NTQxLC0wLjMxODkxMiAtMS4xNzM3OTksLTAuMjM5MTI0IC0xLjA5NTc3NiwtMC4xNTkyNTcgLTEuMjUyMTM2LC0wLjA3OTc5IC0wLjcwNDMyNiwwLjA3OTc5IC0wLjMxMzAzNCwwLjE1OTI1NyAtMC4yMzQ3NzYsMC4wNzk3OSAtMC4xNTY0MzksMC4xNTkzMzcgLTAuMTU2NDM4LDAuMjM5MTI0IDAsMC4xNTkzMzcgLTAuMDc4MzQsMC4yMzkxMjQgMC4wNzgzNCwwLjIzOTM2NCAwLjA3ODEsMC4yMzkxMjQgMC4yMzQ3NzUsMC4zMTg2NzMgMC40Njk0NzMsMC4yMzkwNDUgMC40Njk1NTEsMC4yMzkxMjQgMS4zMzA1NTEsMC4zOTg3IDEuMDE3MzYxLDAuMzk4NDYxIDEuMDE3NDM4LDAuMzk4NyAwLjg2MDY4NywwLjU1NzcxOCAwLjc4MjY2MywwLjU1ODAzNiAwLjM5MTEzNiwwLjM5ODcgMC4zMTMxMTMsMC4zMTg2NzMgMC4yMzQ3NzUsMC40NzgyNDkgMC4yMzQ3NzYsMC4zOTg2MiAwLjE1NjY3MywwLjQ3ODI0OSAwLjE1NjQzOSwwLjU1ODAzNyAwLjA3ODM0LDAuNTU3Nzk3IDAsMC42Mzc3NDUgMCwwLjk1NjQ5NyAtMC4xNTY2NzQsMC44NzY2MyAtMC4yMzQ3NzUsMC44NzY5NDkgLTAuMzEzMTEzLDAuNzE3MjkzIC0wLjQ2OTU1MSwwLjcxNzM3MyAtMC40Njk0NzIsMC42Mzc4MjUgLTAuNTQ3NjUzLDAuNjM3NTA1IC0wLjYyNjIyNSwwLjQ3ODI0OSAtMC43MDQyNDgsMC40NzgyNDkgLTAuNzgyNjYzLDAuMzk4NyAtMC44NjA2ODcsMC4zOTg0NjEgLTAuODYxLDAuMjM5MDQ0IC0wLjkzOTEwMiwwLjIzOTEyNSAtMS4wMTczNjEsMC4xNTkzMzYgLTEuMDE3NDM5LDAuMDc5NzkgLTEuMDk1NDYyLDAgeiIKICAgICBpZD0icGF0aDk1MjIiCiAgICAgc3R5bGU9ImZpbGw6I2UzMDAxYjtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIgLz4KICA8cGF0aAogICAgIGQ9Im0gMTI5LjEzODcsNy4yMTM2NzIzIC0wLjkzOTAyLC0wLjIzOTEyNDQgLTAuNzgyNjcsLTAuMjM5MTI0MyAtMC43MDQyNSwtMC40NzgyNDg3IC0wLjU0Nzg4LC0wLjQ3ODE2OTEgLTAuMzkxNDUsLTAuNjM3ODI0MyAtMC4yMzQ3OCwtMC43MTczNzMxIC0wLjA3ODEsLTAuNzE3MjkzNCAwLC0wLjcxNzM3MzEgMC4yMzQ3OCwtMC42Mzc4MjQzIDAuMzkxMjEsLTAuNjM3NTA1NiAwLjQ2OTU1LC0wLjU1ODAzNjUgMC43MDQyNSwtMC40NzgyNDg3NSAwLjc4MjY2LC0wLjMxODkxMjE5IDEuMDE3MzYsLTAuMjM5MTI0MzYgMS4wOTU3OCwtMC4wNzk1NDg3IDEuMDk1NDYsMC4wNzk1NDg3IDAuOTM5MSwwLjE1OTU3NTY2IDAuNzgyNTksMC4zMTg2NzMwNiAwLjcwNDMyLDAuNDc4NDg3ODggMC40Njk1NiwwLjQ3ODI0ODcgMC4zOTE0NCwwLjYzNzUwNTUgMC4yMzQ3OCwwLjcxNzM3MzEgMC4wNzgsMC43OTcxNjA5IC0wLjA3OCwwLjc5NzA4MTIgLTAuMjM0NzgsMC43MTczNzMxIC0wLjM5MTQ0LDAuNTU4MDM2NSAtMC41NDc4OSwwLjU1NzcxNzggLTAuNzA0MzMsMC4zOTg3IC0wLjc4MjM1LDAuMzE4OTEyMiAtMC45MzkzNCwwLjE1OTMzNjUgLTEuMDE3MTIsMC4wNzk3ODggLTEuMDE3NDQsLTAuMDc5Nzg4IHoiCiAgICAgaWQ9InBhdGg5NTQyIgogICAgIHN0eWxlPSJmaWxsOiNlMzAwMWI7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiIC8+CiAgPHBhdGgKICAgICBkPSJtIDEyNS42MjUsOC41NjI1MDc3IDAsMjAuOTY4NzUwMyA5LjA2MjUsMCAwLC0yMC45Njg3NTAzIHoiCiAgICAgaWQ9InBhdGgxMjI2MCIKICAgICBzdHlsZT0iZmlsbDojZmZmZmZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojZmZmZmZmO3N0cm9rZS13aWR0aDowLjA3ODk3OTk4O3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjEwO3N0cm9rZS1vcGFjaXR5OjA7c3Ryb2tlLWRhc2hhcnJheTpub25lIiAvPgogIDxwYXRoCiAgICAgZD0ibSAxMjUuNjI1LDguNTYyNTA3NyAwLDIwLjk2ODc1MDMgOS4wNjI1LDAgMCwtNyAtMS4wOTM3NSwwIDAsMi42ODc1IC0yLjM0Mzc1LDAgMCwtMi42ODc1IC0yLjY1NjI1LDAgMCwtMi4zMTI1IDIuNjU2MjUsMCAwLC0yLjcxODc1IDIuMzQzNzUsMCAwLDIuNzE4NzUgMS4wOTM3NSwwIDAsLTExLjY1NjI1MDMgLTkuMDYyNSwwIHoiCiAgICAgaWQ9InBhdGg5NTY0IgogICAgIHN0eWxlPSJmaWxsOiNlMzAwMWI7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOiNmZmZmZmY7c3Ryb2tlLXdpZHRoOjAuMDc4OTc5OTg7c3Ryb2tlLWxpbmVjYXA6YnV0dDtzdHJva2UtbGluZWpvaW46bWl0ZXI7c3Ryb2tlLW1pdGVybGltaXQ6MTA7c3Ryb2tlLW9wYWNpdHk6MDtzdHJva2UtZGFzaGFycmF5Om5vbmUiIC8+Cjwvc3ZnPgo8IS0tIHZlcnNpb246IDIwMTEwMzExLCBvcmlnaW5hbCBzaXplOiAxMzQuODkwNyAyOS44OTA1NDcsIGJvcmRlcjogMyUgLS0+Cg==" alt="Swiss-Ski" style="height:48px;width:auto;display:block"></div>
+  </div>
+
+  <div class="filter">
+    <label for="sel">Verband</label>
+    <button class="navbtn" id="prev">&#8249;</button>
+    <select id="sel"></select>
+    <button class="navbtn" id="next">&#8250;</button>
+    <div class="gesamtnote"><div class="k">Total Punkte (BA + BS + SP + LS)</div><div class="v" id="gesamt">–</div></div>
+  </div>
+  <div class="ph" style="margin:2px 0 0">Nur über dieses Dropdown wird die <b>gesamte Beurteilung</b> eines Verbands geladen. Ein Klick auf einen anderen Verband in den Grafiken, Rankings oder der Heatmap fügt ihn als <b>Vergleich</b> im Stärken-Profil hinzu – ohne die Beurteilung zu wechseln.</div>
+
+  <h2 class="section">Übersicht Vollbewertung <span class="hint">– Karte anklicken für Deep Dive</span></h2>
+  <div class="grid4" id="overview"></div>
+
+  <h2 class="section">Profil &amp; Einordnung <span class="hint">– auf einen Blick</span></h2>
+  <div class="split">
+    <div class="panel">
+      <h3>Stärken-Profil</h3>
+      <div class="ph">Total Punkte je Dimension (0–45). Leistungssport-Punkte ÷10 für die Darstellung. <b id="radarName"></b> im Vergleich zum Ø aller Verbände. <b>Klick auf einen anderen Verband in Charts/Rankings/Heatmap legt ihn hier als Vergleich an</b> (erneuter Klick entfernt ihn).</div>
+      <div class="sc-wrap"><div id="radar"></div><div class="tip" id="radartip"></div></div>
+      <div class="qqctrl" style="margin:6px 0 8px">
+        <span class="qqctrl-lbl">Vergleichen mit</span>
+        <select id="radarAdd" style="min-width:230px;font-size:13px;font-weight:700;padding:6px 10px"></select>
+      </div>
+      <div class="radar-leg" id="radarLeg"></div>
+    </div>
+    <div class="panel">
+      <h3>Quantität vs. Qualität</h3>
+      <div class="ph">Quantitative Punkte (X) gegen Qualitätsfaktor (Y) – je weiter rechts oben, desto stärker. Punkt anklicken = Verband als Vergleich ins Stärken-Profil. Dimensionen unten an-/abwählen.</div>
+      <div class="sc-wrap"><div id="scatter"></div><div class="tip" id="tip"></div></div>
+      <div class="radar-leg" id="scLegend">
+        <button class="ptog active" data-d="ba"><i class="dot" style="background:var(--green)"></i>Basisaufgaben</button>
+        <button class="ptog active" data-d="bs"><i class="dot" style="background:var(--yellow)"></i>Breitensport</button>
+        <button class="ptog active" data-d="sp"><i class="dot" style="background:var(--blue)"></i>Sportpersonal</button>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section">Gesamtmatrix aller Verbände <span class="hint">– Heatmap über alle Dimensionen</span></h2>
+  <div class="hm">
+    <div class="ls-cmp-head" style="padding:0 4px">
+      <span class="qqctrl-lbl" id="hmTitle">Verbände</span>
+      <label class="qqctrl-lbl" style="font-weight:600;margin-left:auto">Anzeigen</label>
+      <select id="hmTopSel"><option value="10">Top 10 (Standard)</option><option value="20">Top 20</option><option value="999">Alle</option></select>
+      <select id="hmAddSel" style="min-width:230px"></select>
+    </div>
+    <table><thead><tr><th>#</th><th style="width:130px">Verband</th><th>Basis&shy;aufgaben</th><th>Breiten&shy;sport</th><th>Sport&shy;personal</th><th>Leistungs&shy;sport</th><th style="color:#9b59b6">Entwick&shy;lung</th><th style="color:#0d9488">NASAK</th><th>Total</th></tr></thead><tbody id="hmbody"></tbody></table>
+    <div class="note">Farbintensität = Höhe der Total-Punkte je Dimension (0–45). Standard: Top 10 nach Gesamttotal – Primär- und Vergleichsverbände bleiben immer sichtbar. Klick auf eine Zeile fügt den Verband als Vergleich ins Stärken-Profil hinzu.</div>
+  </div>
+
+  <h2 class="section">Vergleich aller Key-Account-Verbände <span class="hint">– sortiertes Ranking</span></h2>
+  <div class="cmp">
+    <div class="tabs"><div class="tab active" data-dim="ba">Basisaufgaben</div><div class="tab" data-dim="bs">Breitensport</div><div class="tab" data-dim="sp">Sportpersonal</div><div class="tab" data-dim="ls">Leistungssport</div></div>
+    <div class="ls-cmp-head" style="padding:2px 2px 0;margin-top:4px">
+      <span class="qqctrl-lbl" id="cmpCount"></span>
+      <label class="qqctrl-lbl" style="font-weight:600;margin-left:auto">Anzeigen</label>
+      <select id="cmpTopSel"><option value="10">Top 10 (Standard)</option><option value="20">Top 20</option><option value="999">Alle</option></select>
+      <select id="cmpAddSel" style="min-width:230px"></select>
+    </div>
+    <div id="cmpbody"></div>
+    <div class="note">Sortiert nach Total Punkten der gewählten Dimension. Standard: Top 10 – Primär- und Vergleichsverbände bleiben immer sichtbar. Klick auf einen Balken fügt den Verband als Vergleich ins Stärken-Profil hinzu.</div>
+  </div>
+
+  <h2 class="section">Qualität vs. Quantität – alle Verbände <span class="hint">– gruppiertes Balkendiagramm, zwei Parameter</span></h2>
+  <div class="panel">
+    <div class="tabs" id="qqTabs" style="margin-bottom:6px">
+      <div class="tab active" data-dim="ba">Basisaufgaben</div>
+      <div class="tab" data-dim="bs">Breitensport</div>
+      <div class="tab" data-dim="sp">Sportpersonal</div>
+    </div>
+    <div class="qqctrl">
+      <div class="qqctrl-grp">
+        <span class="qqctrl-lbl">Parameter</span>
+        <button class="ptog active" id="togQ"><i class="dot" style="background:#3a86b5"></i>Quantitativ</button>
+        <button class="ptog active" id="togF"><i class="dot" style="background:#e8943a"></i>Qualitätsfaktor</button>
+      </div>
+      <div class="qqctrl-grp" style="margin-left:auto">
+        <span class="qqctrl-lbl" id="qqCount"></span>
+        <span class="qqctrl-lbl">Anzeigen</span>
+        <select id="qqTopSel" style="font-size:13px;font-weight:700;padding:6px 9px"><option value="10">Top 10 (Standard)</option><option value="20">Top 20</option><option value="999">Alle</option></select>
+        <select id="qqAddSel" style="min-width:180px;font-size:13px;font-weight:700;padding:6px 9px"></select>
+      </div>
+      <div class="qqctrl-grp">
+        <span class="qqctrl-lbl">Sortieren</span>
+        <select id="qqSortSel" style="min-width:200px;font-size:13px;font-weight:700;padding:6px 10px">
+          <option value="q">Quantitativ – hoch → tief</option>
+          <option value="f">Qualitätsfaktor – hoch → tief</option>
+        </select>
+      </div>
+    </div>
+    <div id="qqbars"></div>
+    <div class="ph" style="margin-top:10px">Pro Verband zwei gruppierte Balken: <b>Q = Quantitativ</b> (Anteil von 15 Punkten) und <b>QF = Qualitätsfaktor</b> (Anteil von 3). Absolutwerte stehen rechts an jedem Balken. Standard: Top 10 – Primär- und Vergleichsverbände bleiben immer sichtbar. Zeile anklicken fügt den Verband als Vergleich hinzu.</div>
+  </div>
+
+  <h2 class="section">Leistungssport – Bewertung pro Sportart <span class="hint">– Zeile anklicken für Deep Dive</span></h2>
+  <div class="ls-wrap">
+    <div class="ls-cmp-head">
+      <span class="own-legend"><i class="own-swatch"></i>= Sportarten von <b id="ownName"></b></span>
+      <span class="qqctrl-lbl" id="lsCmpTitle" style="margin-left:8px">Andere einblenden</span>
+      <label class="qqctrl-lbl" style="font-weight:600;margin-left:auto">Anzeigen</label>
+      <select id="lsTopSel"><option value="5">Top 5 (Standard)</option><option value="10">Top 10</option><option value="20">Top 20</option><option value="999">Alle</option></select>
+      <select id="lsAddSel" style="min-width:230px"></select>
+    </div>
+    <table><thead><tr><th>Sportart</th><th class="lcell">Verband</th><th>Quantitativ /&nbsp;15</th><th>Qualitätsfaktor /&nbsp;3</th><th>Kategorie</th><th>Total Punkte</th><th></th></tr></thead><tbody id="lsCombined"></tbody></table>
+    <div class="note">Total Punkte = Quantitative Punkte × Qualitätsfaktor (max. 45). Bewertungszeitraum Sommersportarten 2021–2024, Wintersportarten 2022/23–2025/26. Hervorgehobene Zeilen = Sportarten des gewählten Verbands; nach Total Punkten sortiert. Zeile anklicken öffnet den Deep Dive der Sportart – der gewählte Verband bleibt unverändert.</div>
+  </div>
+
+  <div class="foot"><span>Datenquelle: Pilotbewertung Key Account, 23.06.2026 · Darstellung im Stil der Swiss-Olympic-Standortbestimmung</span><span>Interaktives Dashboard</span></div>
+  </div><!-- /tab-standort -->
+  <div id="tab-simulator" style="display:none">
+    <div class="head" style="margin-bottom:18px">
+      <div>
+        <h1>Förder-Simulator</h1>
+        <div><span class="sub">Mittelverteilung simulieren – Pilotdaten 23.06.2026</span></div>
+        <div class="ph" style="margin-top:10px">Passen Sie die Gelder pro Topf mit den Schiebereglern an (Schritte: 100 000 CHF). Die Tabelle zeigt die simulierten Förderbeiträge der Top-10 Key-Account-Verbände.<br><span style="display:inline-block;margin-top:6px;background:#fef08a;color:#713f12;border-radius:4px;padding:3px 10px;font-size:12px;font-weight:600">&#9998; Prozentangaben in den Töpfen sind direkt editierbar – Wert eintippen und Enter drücken.</span></div>
+      </div>
+      <div class="logo" id="sim-logo"></div>
+    </div>
+    <h2 class="section" style="margin:0 0 12px">Gelder pro Topf</h2>
+    <div id="sim-pots-chart" style="margin:0 0 14px"></div>
+    <div class="sim-pots">
+      <div class="pot-card" data-pot="ba">
+        <div class="pot-hd"><span class="pot-lbl">BA – Basisaufgaben</span><div class="pot-ctrl"><label class="pot-pct-wrap"><input type="number" class="pot-pct-inp" id="sim-pct-ba" min="0" max="100" step="2" value="20.0"><span class="pot-pct-unit">%</span></label><div class="pot-arrows"><button class="pot-arrow" id="sim-up-ba">▲</button><button class="pot-arrow" id="sim-dn-ba">▼</button></div></div></div>
+        <div class="pot-amt-row"><button class="pot-arrow-h" id="sim-sub-ba">◀</button><div class="pot-amt"><span id="sim-amt-ba">14'000'000</span> <small>CHF</small></div><button class="pot-arrow-h" id="sim-add-ba">▶</button></div>
+        <input type="range" class="pot-slider" id="sim-sl-ba" min="0" max="50000000" step="1400000" value="14000000">
+        <div class="pot-ppt" id="sim-ppt-ba">–</div>
+      </div>
+      <div class="pot-card" data-pot="bs">
+        <div class="pot-hd"><span class="pot-lbl">BS – Breitensport</span><div class="pot-ctrl"><label class="pot-pct-wrap"><input type="number" class="pot-pct-inp" id="sim-pct-bs" min="0" max="100" step="2" value="5.0"><span class="pot-pct-unit">%</span></label><div class="pot-arrows"><button class="pot-arrow" id="sim-up-bs">▲</button><button class="pot-arrow" id="sim-dn-bs">▼</button></div></div></div>
+        <div class="pot-amt-row"><button class="pot-arrow-h" id="sim-sub-bs">◀</button><div class="pot-amt"><span id="sim-amt-bs">3'500'000</span> <small>CHF</small></div><button class="pot-arrow-h" id="sim-add-bs">▶</button></div>
+        <input type="range" class="pot-slider" id="sim-sl-bs" min="0" max="50000000" step="1400000" value="3500000">
+        <div class="pot-ppt" id="sim-ppt-bs">–</div>
+      </div>
+      <div class="pot-card" data-pot="sp">
+        <div class="pot-hd"><span class="pot-lbl">SP – Sportpersonal</span><div class="pot-ctrl"><label class="pot-pct-wrap"><input type="number" class="pot-pct-inp" id="sim-pct-sp" min="0" max="100" step="2" value="40.0"><span class="pot-pct-unit">%</span></label><div class="pot-arrows"><button class="pot-arrow" id="sim-up-sp">▲</button><button class="pot-arrow" id="sim-dn-sp">▼</button></div></div></div>
+        <div class="pot-amt-row"><button class="pot-arrow-h" id="sim-sub-sp">◀</button><div class="pot-amt"><span id="sim-amt-sp">28'000'000</span> <small>CHF</small></div><button class="pot-arrow-h" id="sim-add-sp">▶</button></div>
+        <input type="range" class="pot-slider" id="sim-sl-sp" min="0" max="50000000" step="1400000" value="28000000">
+        <div class="pot-ppt" id="sim-ppt-sp">–</div>
+      </div>
+      <div class="pot-card" data-pot="ls">
+        <div class="pot-hd"><span class="pot-lbl">LS – Leistungssport</span><div class="pot-ctrl"><label class="pot-pct-wrap"><input type="number" class="pot-pct-inp" id="sim-pct-ls" min="0" max="100" step="2" value="25.0"><span class="pot-pct-unit">%</span></label><div class="pot-arrows"><button class="pot-arrow" id="sim-up-ls">▲</button><button class="pot-arrow" id="sim-dn-ls">▼</button></div></div></div>
+        <div class="pot-amt-row"><button class="pot-arrow-h" id="sim-sub-ls">◀</button><div class="pot-amt"><span id="sim-amt-ls">17'500'000</span> <small>CHF</small></div><button class="pot-arrow-h" id="sim-add-ls">▶</button></div>
+        <input type="range" class="pot-slider" id="sim-sl-ls" min="0" max="50000000" step="1400000" value="17500000">
+        <div class="pot-ppt" id="sim-ppt-ls">–</div>
+      </div>
+      <div class="pot-card" data-pot="ew">
+        <div class="pot-hd"><span class="pot-lbl">EW – Entwicklung</span><div class="pot-ctrl"><label class="pot-pct-wrap"><input type="number" class="pot-pct-inp" id="sim-pct-ew" min="0" max="100" step="2" value="10.0"><span class="pot-pct-unit">%</span></label><div class="pot-arrows"><button class="pot-arrow" id="sim-up-ew">▲</button><button class="pot-arrow" id="sim-dn-ew">▼</button></div></div></div>
+        <div class="pot-amt-row"><button class="pot-arrow-h" id="sim-sub-ew">◀</button><div class="pot-amt"><span id="sim-amt-ew">7'000'000</span> <small>CHF</small></div><button class="pot-arrow-h" id="sim-add-ew">▶</button></div>
+        <input type="range" class="pot-slider" id="sim-sl-ew" min="0" max="50000000" step="1400000" value="7000000">
+        <div style="font-size:11px;color:#9b59b6;margin-top:2px;font-weight:600">davon 3'500'000 CHF für KA-Verbände</div>
+        <div class="pot-ppt" id="sim-ppt-ew">–</div>
+      </div>
+    </div>
+    <div class="sim-total-bar" style="margin-top:20px">
+      <div><span class="t">Total aller Töpfe</span><br><span class="v" id="sim-total">70'000'000</span> <span class="t">CHF</span></div>
+      <div class="sim-reserve-box"><span class="t">Reserve</span><br><span class="sim-reserve-val" id="sim-reserve">0.0%</span></div>
+      <button class="sim-reset" onclick="resetSimPots()">Zurücksetzen</button>
+      <label class="sim-lock-lbl"><input type="checkbox" id="simLock" checked onchange="simLocked=this.checked"> Gesamtsumme fixieren</label>
+      <div class="sim-info-wrap">
+        <button class="sim-info-icon" tabindex="0" aria-label="Hinweise zu den Töpfen">ⓘ
+          <span class="sim-info-tip">LS-Topf geteilt mit allen ~85 Verbänden · EW-Topf (3.5 Mio): nur Key-Account-Verbände · NASAK: fix, kein Slider (Σ KAT pro LS-Sportart)</span>
+        </button>
+      </div>
+    </div>
+    <div id="ka-total-bar" style="margin:18px 0 0"></div>
+    <h2 class="section" style="margin:8px 0 10px">Simulierte Förderbeiträge – Key-Account-Verbände</h2>
+    <div class="sim-ctrl">
+      <label><input type="checkbox" id="simShowAll" onchange="simShowAll=this.checked;renderSim()"> Alle anzeigen</label>
+      <button class="sim-dl-btn" onclick="downloadSimCSV()" title="Tabelle als CSV herunterladen">⬇ CSV Export</button>
+      <button class="sim-dl-btn sim-logic-btn" onclick="openLogicModal()" title="Formellogik anzeigen">ⓘ Formellogik</button>
+    </div>
+    <div id="sim-table-wrap">
+    <table class="sim-table">
+      <thead>
+        <tr>
+          <th class="rk">#</th>
+          <th style="text-align:left">Verband</th>
+          <th style="color:var(--green)">BA</th><th class="pct-col">%</th>
+          <th style="color:var(--yellow)">BS</th><th class="pct-col">%</th>
+          <th style="color:var(--blue)">SP</th><th class="pct-col">%</th>
+          <th style="color:var(--red)">LS</th><th class="pct-col">%</th>
+          <th style="color:#9b59b6">EW</th><th class="pct-col">%</th>
+          <th style="color:var(--ink);font-weight:800">o.NASAK</th>
+          <th>NASAK</th>
+          <th>Total CHF</th><th class="pct-col">%</th>
+          <th class="delta-th">Δ CHF</th>
+        </tr>
+      </thead>
+      <tbody id="sim-body"></tbody>
+    </table>
+    </div>
+    <div id="sim-foot-outer">
+      <table id="sim-foot-table" class="sim-table" style="table-layout:fixed">
+        <colgroup id="sim-foot-cols"><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col></colgroup>
+        <tbody id="sim-foot"></tbody>
+      </table>
+    </div>
+    <h2 class="section" style="margin:24px 0 10px">KA / Basisverbände – Aufteilung pro Topf</h2>
+    <div id="ka-split-body"></div>
+    <details id="sim-fed-bars-wrap" style="margin:24px 0 0">
+      <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#1f2733;padding:10px 14px;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);list-style:none;display:flex;align-items:center;gap:8px;-webkit-user-select:none;user-select:none">
+        <span id="sim-fed-chevron" style="font-size:11px;transition:transform .2s">▶</span>
+        Gesamt-Beiträge pro Verband (ohne NASAK)
+      </summary>
+      <div id="sim-fed-bars" style="margin-top:10px"></div>
+    </details>
+    <details id="sim-pot-charts-wrap" style="margin:24px 0 0">
+      <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#1f2733;padding:10px 14px;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);list-style:none;display:flex;align-items:center;gap:8px;-webkit-user-select:none;user-select:none">
+        <span id="sim-pot-chevron" style="font-size:11px;transition:transform .2s">▶</span>
+        Pro-Topf Verteilung – alle Verbände
+      </summary>
+      <div id="sim-pot-charts" style="margin-top:10px"></div>
+    </details>
+  </div><!-- /tab-simulator -->
+
+  <div id="tab-newsport" style="display:none">
+    <h2 class="section">Neue Sportart simulieren</h2>
+    <p class="ph" style="margin:0 0 18px;font-size:12px;color:var(--muted)">Simuliert den finanziellen Effekt einer zusätzlichen Sportart auf die Förderbeträge des gewählten Verbands (LS-, EW-Topf und NASAK).</p>
+    <div class="ns-panel">
+      <div class="ns-config">
+        <div class="ns-field">
+          <span class="ns-lbl">Verband</span>
+          <select id="ns-fed" onchange="renderNewSport()"></select>
+        </div>
+        <div class="ns-field">
+          <span class="ns-lbl">Neue Sportart (Name)</span>
+          <input type="text" id="ns-name" value="Freeride" oninput="renderNewSport()" placeholder="z.B. Freeride">
+        </div>
+        <div class="ns-field">
+          <span class="ns-lbl">Referenz – gleiche Bewertung wie</span>
+          <select id="ns-ref" onchange="renderNewSport()"></select>
+        </div>
+        <div class="ns-field" id="ns-manual-wrap" style="display:none">
+          <span class="ns-lbl">LS-Punkte manuell</span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input type="range" id="ns-manual-sl" min="0" max="50" step="0.5" value="36"
+              oninput="document.getElementById('ns-manual-num').value=this.value;renderNewSport()" style="width:150px">
+            <input type="number" id="ns-manual-num" min="0" max="50" step="0.5" value="36"
+              oninput="document.getElementById('ns-manual-sl').value=this.value;renderNewSport()"
+              style="width:68px;padding:5px 8px;border:1px solid #c7ced8;border-radius:6px;font-size:13px;font-weight:700">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="ns-result"></div>
+  </div><!-- /tab-newsport -->
+</div>
+
+<!-- deep-dive modal -->
+<div class="modal-bg" id="modalbg"><div class="modal" id="modal"><div class="mh" id="mhead"></div><div class="mb" id="mbody"></div></div></div>
+
+<!-- logic modal -->
+<div class="logic-modal-bg" id="logic-modal-bg" onclick="if(event.target===this)closeLogicModal()">
+  <div class="logic-modal">
+    <div class="logic-modal-hd">
+      <h3>Formellogik – CHF-Beitrag je Stufe / Punkt</h3>
+      <button class="logic-modal-close" onclick="closeLogicModal()">✕</button>
+    </div>
+    <div id="logic-modal-body"></div>
+  </div>
+</div>
+
+<script>
+const BUNDLE = {"data": {"PluSport Behindertensport Schweiz": {"ba": {"quant": 8, "qf": 2.4667, "total": 19.7336}, "bs": {"quant": 5, "qf": 2.1667, "total": 10.8335}, "sp": {"quant": 4, "qf": 1.5333, "total": 6.1332}, "ls": [{"sportart": "Behindertensport", "quant": 11.5, "qf": 1.6667, "total": 19.16705}]}, "Schweizer Alpen-Club": {"ba": {"quant": 11.5, "qf": 2.4667, "total": 28.36705}, "bs": {"quant": 13, "qf": 2.6667, "total": 34.6671}, "sp": {"quant": 6, "qf": 2.2, "total": 13.200000000000001}, "ls": [{"sportart": "Eisklettern", "quant": 4.5, "qf": 1, "total": 4.5}, {"sportart": "Skitourenrennen", "quant": 14, "qf": 2.4074, "total": 33.7036}, {"sportart": "Sportklettern", "quant": 6, "qf": 2.2593, "total": 13.555800000000001}]}, "Schweizer Paraplegiker-Vereinigung": {"ba": {"quant": 7.5, "qf": 2.4667, "total": 18.500249999999998}, "bs": {"quant": 3, "qf": 2, "total": 6}, "sp": {"quant": 4, "qf": 2.0667, "total": 8.2668}, "ls": [{"sportart": "Rollstuhlsport", "quant": 10, "qf": 2.1852, "total": 21.852}]}, "Schweizer Schiesssportverband": {"ba": {"quant": 10.5, "qf": 2.3333, "total": 24.49965}, "bs": {"quant": 11, "qf": 2.1667, "total": 23.8337}, "sp": {"quant": 5, "qf": 1.9333, "total": 9.6665}, "ls": [{"sportart": "Sportschiessen", "quant": 12, "qf": 2.4074, "total": 28.8888}]}, "Schweizerischer Fussballverband": {"ba": {"quant": 13, "qf": 2.7333, "total": 35.5329}, "bs": {"quant": 14, "qf": 3, "total": 42}, "sp": {"quant": 8, "qf": 2.4667, "total": 19.7336}, "ls": [{"sportart": "Beachsoccer Frauen", "quant": 0, "qf": 1.4444, "total": 0}, {"sportart": "Beachsoccer Männer", "quant": 7, "qf": 2.7037, "total": 18.9259}, {"sportart": "Fussball Frauen", "quant": 5, "qf": 2.4074, "total": 12.036999999999999}, {"sportart": "Fussball Männer", "quant": 5, "qf": 2.4074, "total": 12.036999999999999}, {"sportart": "Futsal Frauen", "quant": 0, "qf": 1, "total": 0}, {"sportart": "Futsal Männer", "quant": 0, "qf": 1.3704, "total": 0}]}, "Schweizerischer Handball-Verband": {"ba": {"quant": 7, "qf": 2.4667, "total": 17.2669}, "bs": {"quant": 7, "qf": 2.3333, "total": 16.333099999999998}, "sp": {"quant": 5, "qf": 2.2, "total": 11}, "ls": [{"sportart": "Handball Frauen", "quant": 7, "qf": 2.1852, "total": 15.2964}, {"sportart": "Handball Männer", "quant": 7, "qf": 2.1852, "total": 15.2964}]}, "Schweizerischer Hängegleiter-Verband": {"ba": {"quant": 6, "qf": 2.2, "total": 13.200000000000001}, "bs": {"quant": 8, "qf": 2.1667, "total": 17.3336}, "sp": {"quant": 2, "qf": 1.5333, "total": 3.0666}, "ls": [{"sportart": "Delta/Drachenfliegen", "quant": 1, "qf": 1, "total": 1}, {"sportart": "Gleitschirm", "quant": 6, "qf": 1.3704, "total": 8.2224}]}, "Schweizerischer Judo- & Ju-Jitsu-Verband": {"ba": {"quant": 4.5, "qf": 1.8, "total": 8.1}, "bs": {"quant": 7, "qf": 2.3333, "total": 16.333099999999998}, "sp": {"quant": 3, "qf": 2.3333, "total": 6.9999}, "ls": [{"sportart": "Ju-Jitsu", "quant": 4.5, "qf": 1.8889, "total": 8.50005}, {"sportart": "Judo", "quant": 12, "qf": 2.2593, "total": 27.111600000000003}, {"sportart": "Kendo", "quant": 2.5, "qf": 1.4444, "total": 3.6109999999999998}]}, "Schweizerischer Ruderverband": {"ba": {"quant": 7, "qf": 1.9333, "total": 13.533100000000001}, "bs": {"quant": 6, "qf": 2.3333, "total": 13.9998}, "sp": {"quant": 5, "qf": 2.0667, "total": 10.3335}, "ls": [{"sportart": "Rudern", "quant": 14.5, "qf": 2.7037, "total": 39.20365}]}, "Schweizerischer Turnverband": {"ba": {"quant": 12.75, "qf": 2.4667, "total": 31.450425}, "bs": {"quant": 15, "qf": 2.8333, "total": 42.4995}, "sp": {"quant": 8, "qf": 2.4667, "total": 19.7336}, "ls": [{"sportart": "Akrobatikturnen", "quant": 1.5, "qf": 1, "total": 1.5}, {"sportart": "Faustball Frauen", "quant": 2, "qf": 1, "total": 2}, {"sportart": "Faustball Männer", "quant": 1, "qf": 2.8519, "total": 2.8519}, {"sportart": "Kunstturnen", "quant": 11.5, "qf": 2.7778, "total": 31.9447}, {"sportart": "Rhythmische Gymnastik", "quant": 0.5, "qf": 1.4444, "total": 0.7222}, {"sportart": "Trampolin", "quant": 1.5, "qf": 1.4444, "total": 2.1666}]}, "Swiss Aquatics": {"ba": {"quant": 8.5, "qf": 2.0667, "total": 17.56695}, "bs": {"quant": 10, "qf": 2.3333, "total": 23.333}, "sp": {"quant": 6, "qf": 2.3333, "total": 13.9998}, "ls": [{"sportart": "Artistic Swimming", "quant": 5, "qf": 1.963, "total": 9.815000000000001}, {"sportart": "Schwimmen", "quant": 14, "qf": 2.7037, "total": 37.8518}, {"sportart": "Wasserball Frauen", "quant": 1, "qf": 1.5926, "total": 1.5926}, {"sportart": "Wasserball Männer", "quant": 1, "qf": 1.7407, "total": 1.7407}, {"sportart": "Wasserspringen", "quant": 5.5, "qf": 1.8889, "total": 10.38895}]}, "Swiss Athletics": {"ba": {"quant": 12.25, "qf": 2.3333, "total": 28.582925}, "bs": {"quant": 8, "qf": 2.3333, "total": 18.6664}, "sp": {"quant": 6, "qf": 2.6, "total": 15.600000000000001}, "ls": [{"sportart": "Leichtathletik", "quant": 13.5, "qf": 2.9259, "total": 39.49965}, {"sportart": "Leichtathletik-Berglauf", "quant": 6, "qf": 1.8889, "total": 11.333400000000001}]}, "Swiss Basketball": {"ba": {"quant": 7.25, "qf": 1.9333, "total": 14.016425}, "bs": {"quant": 7, "qf": 2.1667, "total": 15.1669}, "sp": {"quant": 2, "qf": 1.6667, "total": 3.3334}, "ls": [{"sportart": "Basket 3x3", "quant": 4, "qf": 1.2963, "total": 5.1852}, {"sportart": "Basketball Frauen", "quant": 1, "qf": 1.8889, "total": 1.8889}, {"sportart": "Basketball Männer", "quant": 1, "qf": 1.963, "total": 1.963}]}, "Swiss Canoe": {"ba": {"quant": 5.5, "qf": 1.8, "total": 9.9}, "bs": {"quant": 3, "qf": 1.8333, "total": 5.4999}, "sp": {"quant": 4, "qf": 2.3333, "total": 9.3332}, "ls": [{"sportart": "Kanu: Polo Frauen", "quant": 6, "qf": 1.6667, "total": 10.0002}, {"sportart": "Kanu: Polo Männer", "quant": 6, "qf": 1, "total": 6}, {"sportart": "Kanu: Regatta", "quant": 1.5, "qf": 2.037, "total": 3.0555}, {"sportart": "Kanu: Slalom", "quant": 12.5, "qf": 2.1111, "total": 26.388749999999998}, {"sportart": "Kanu: Wildwasserrennsport", "quant": 4, "qf": 1, "total": 4}]}, "Swiss Cycling": {"ba": {"quant": 7.5, "qf": 2.3333, "total": 17.49975}, "bs": {"quant": 6, "qf": 2.1667, "total": 13.0002}, "sp": {"quant": 7, "qf": 2.4667, "total": 17.2669}, "ls": [{"sportart": "Rad: BMX", "quant": 13.5, "qf": 2.4074, "total": 32.4999}, {"sportart": "Rad: Bahn", "quant": 8.5, "qf": 2.5556, "total": 21.7226}, {"sportart": "Rad: Kunstradfahren", "quant": 2.5, "qf": 1, "total": 2.5}, {"sportart": "Rad: MTB", "quant": 14, "qf": 2.7778, "total": 38.8892}, {"sportart": "Rad: Quer", "quant": 1.5, "qf": 1.4444, "total": 2.1666}, {"sportart": "Rad: Radball", "quant": 2, "qf": 1, "total": 2}, {"sportart": "Rad: Strasse", "quant": 12.5, "qf": 2.8519, "total": 35.64875}, {"sportart": "Rad: Trial", "quant": 3, "qf": 1, "total": 3}]}, "Swiss Equestrian": {"ba": {"quant": 9.5, "qf": 2.3333, "total": 22.166349999999998}, "bs": {"quant": 6, "qf": 2.3333, "total": 13.9998}, "sp": {"quant": 3, "qf": 2.0667, "total": 6.2001}, "ls": [{"sportart": "Pferdesport: Concours Complet", "quant": 9.5, "qf": 2.1852, "total": 20.7594}, {"sportart": "Pferdesport: Dressur", "quant": 3, "qf": 2.1852, "total": 6.5556}, {"sportart": "Pferdesport: Endurance", "quant": 2.5, "qf": 1, "total": 2.5}, {"sportart": "Pferdesport: Fahren", "quant": 5.5, "qf": 1, "total": 5.5}, {"sportart": "Pferdesport: Reining", "quant": 1.5, "qf": 1, "total": 1.5}, {"sportart": "Pferdesport: Springen", "quant": 13.5, "qf": 2.1852, "total": 29.5002}, {"sportart": "Pferdesport: Voltigieren", "quant": 6, "qf": 1, "total": 6}]}, "Swiss Fencing": {"ba": {"quant": 3.75, "qf": 1.5333, "total": 5.749875}, "bs": {"quant": 2, "qf": 1.6667, "total": 3.3334}, "sp": {"quant": 2, "qf": 1.6667, "total": 3.3334}, "ls": [{"sportart": "Fechten", "quant": 8.5, "qf": 1.8148, "total": 15.425799999999999}]}, "Swiss Golf": {"ba": {"quant": 11.25, "qf": 2.3333, "total": 26.249624999999998}, "bs": {"quant": 8, "qf": 2.3333, "total": 18.6664}, "sp": {"quant": 4, "qf": 2.3333, "total": 9.3332}, "ls": [{"sportart": "Golf", "quant": 5, "qf": 2.4074, "total": 12.036999999999999}]}, "Swiss Ice Hockey Federation": {"ba": {"quant": 10, "qf": 2.0667, "total": 20.667}, "bs": {"quant": 7, "qf": 2.5, "total": 17.5}, "sp": {"quant": 5, "qf": 2.3333, "total": 11.6665}, "ls": [{"sportart": "Eishockey Frauen", "quant": 14, "qf": 2.1111, "total": 29.5554}, {"sportart": "Eishockey Männer", "quant": 14, "qf": 2.4815, "total": 34.741}]}, "Swiss Ice Skating": {"ba": {"quant": 5, "qf": 1.6667, "total": 8.3335}, "bs": {"quant": 4, "qf": 1.6667, "total": 6.6668}, "sp": {"quant": 4, "qf": 2.2, "total": 8.8}, "ls": [{"sportart": "Eiskunstlauf", "quant": 9, "qf": 2.4074, "total": 21.6666}, {"sportart": "Eisschnelllauf", "quant": 9, "qf": 1.6667, "total": 15.000300000000001}, {"sportart": "Short Track", "quant": 0.5, "qf": 1.4444, "total": 0.7222}, {"sportart": "Synchronized Skating", "quant": 2.5, "qf": 1, "total": 2.5}]}, "Swiss Karate Federation": {"ba": {"quant": 5.25, "qf": 1.5333, "total": 8.049825}, "bs": {"quant": 5, "qf": 1.6667, "total": 8.3335}, "sp": {"quant": 2, "qf": 1.8, "total": 3.6}, "ls": [{"sportart": "Karate", "quant": 8, "qf": 2.1111, "total": 16.8888}]}, "Swiss Orienteering": {"ba": {"quant": 6, "qf": 2.0667, "total": 12.4002}, "bs": {"quant": 4, "qf": 2.1667, "total": 8.6668}, "sp": {"quant": 3, "qf": 1.9333, "total": 5.7999}, "ls": [{"sportart": "Bike-OL", "quant": 6, "qf": 1, "total": 6}, {"sportart": "Orientierungslauf", "quant": 10, "qf": 2.4074, "total": 24.073999999999998}, {"sportart": "Ski-OL", "quant": 5, "qf": 1, "total": 5}]}, "Swiss Sailing": {"ba": {"quant": 7.25, "qf": 1.6667, "total": 12.083575}, "bs": {"quant": 6, "qf": 1.6667, "total": 10.0002}, "sp": {"quant": 3, "qf": 1.8, "total": 5.4}, "ls": [{"sportart": "Segeln/Windsurfen", "quant": 14, "qf": 2.1852, "total": 30.5928}]}, "Swiss Sliding": {"ba": {"quant": 2, "qf": 1.5333, "total": 3.0666}, "bs": {"quant": 0, "qf": 1, "total": 0}, "sp": {"quant": 4, "qf": 1.5333, "total": 6.1332}, "ls": [{"sportart": "Bob", "quant": 13, "qf": 2.2593, "total": 29.370900000000002}, {"sportart": "Rodeln", "quant": 4.5, "qf": 1.963, "total": 8.8335}, {"sportart": "Skeleton", "quant": 4.5, "qf": 2.1852, "total": 9.833400000000001}]}, "Swiss Tennis": {"ba": {"quant": 10.75, "qf": 2.3333, "total": 25.082974999999998}, "bs": {"quant": 10, "qf": 2.3333, "total": 23.333}, "sp": {"quant": 7, "qf": 2.4667, "total": 17.2669}, "ls": [{"sportart": "Tennis", "quant": 9.5, "qf": 2.4074, "total": 22.8703}]}, "Swiss Triathlon": {"ba": {"quant": 6.5, "qf": 2.3333, "total": 15.16645}, "bs": {"quant": 4, "qf": 2.5, "total": 10}, "sp": {"quant": 3, "qf": 2.3333, "total": 6.9999}, "ls": [{"sportart": "Duathlon", "quant": 3, "qf": 1, "total": 3}, {"sportart": "Triathlon", "quant": 14, "qf": 2.6296, "total": 36.8144}]}, "Swiss Unihockey": {"ba": {"quant": 8.25, "qf": 2.4667, "total": 20.350275}, "bs": {"quant": 7, "qf": 2.3333, "total": 16.333099999999998}, "sp": {"quant": 4, "qf": 2.3333, "total": 9.3332}, "ls": [{"sportart": "Unihockey Frauen", "quant": 7, "qf": 2.4074, "total": 16.8518}, {"sportart": "Unihockey Männer", "quant": 8, "qf": 2.4074, "total": 19.2592}]}, "Swiss Volley": {"ba": {"quant": 8.25, "qf": 2.4667, "total": 20.350275}, "bs": {"quant": 8, "qf": 2.5, "total": 20}, "sp": {"quant": 7, "qf": 2.6, "total": 18.2}, "ls": [{"sportart": "Beachvolleyball", "quant": 12, "qf": 2.7778, "total": 33.333600000000004}, {"sportart": "Volleyball Frauen", "quant": 4, "qf": 2.5556, "total": 10.2224}, {"sportart": "Volleyball Männer", "quant": 3, "qf": 2.4815, "total": 7.4445}]}, "Swiss-Ski": {"ba": {"quant": 10.25, "qf": 2.6, "total": 26.650000000000002}, "bs": {"quant": 9, "qf": 2.8333, "total": 25.4997}, "sp": {"quant": 15, "qf": 2.7333, "total": 40.9995}, "ls": [{"sportart": "Biathlon", "quant": 12, "qf": 2.8519, "total": 34.2228}, {"sportart": "Grasski", "quant": 2.5, "qf": 1, "total": 2.5}, {"sportart": "Langlauf", "quant": 15, "qf": 2.7778, "total": 41.667}, {"sportart": "Nordische Kombination", "quant": 0, "qf": 1.963, "total": 0}, {"sportart": "Ski Alpin", "quant": 15, "qf": 2.9259, "total": 43.8885}, {"sportart": "Ski Freestyle", "quant": 14.5, "qf": 2.7778, "total": 40.2781}, {"sportart": "Skispringen", "quant": 10, "qf": 2.7037, "total": 27.037}, {"sportart": "Snow Bike", "quant": 2, "qf": 1, "total": 2}, {"sportart": "Snowboard", "quant": 13, "qf": 2.7778, "total": 36.1114}, {"sportart": "Telemark", "quant": 6, "qf": 1.5185, "total": 9.111}]}, "Swisscurling Association": {"ba": {"quant": 6.25, "qf": 2.0667, "total": 12.916875}, "bs": {"quant": 3, "qf": 2.1667, "total": 6.5001}, "sp": {"quant": 2, "qf": 1.6667, "total": 3.3334}, "ls": [{"sportart": "Curling", "quant": 15, "qf": 1.8889, "total": 28.3335}]}, "swiss badminton": {"ba": {"quant": 6.75, "qf": 2.2, "total": 14.850000000000001}, "bs": {"quant": 5, "qf": 2.8333, "total": 14.1665}, "sp": {"quant": 3, "qf": 1.9333, "total": 5.7999}, "ls": [{"sportart": "Badminton", "quant": 7, "qf": 2.2593, "total": 15.815100000000001}]}}, "detail": {"Swiss-Ski": {"ba": {"quant": [["Mitgliederzahl total", 2.0, 4], ["Vom Sportverband erreichte Personen", 1.0, 1], ["Beschäftigungsgrade Schlüsselfunktionen", 5, 5], ["Mitgliederstruktur", 1.5, 2], ["Finanzen", 0.75, 3]], "qual": [["Verbandsstrategie", 3], ["Organisationsreglement", null], ["Organisationsentwicklung", 2], ["Gesellschaftliche Themen", 2], ["Vereins- und Regionalentwicklung", 2], ["Unternehmerische Orientierung", 3]]}, "bs": {"quant": [["Aktivmitglieder", 6, 9], ["J+S Leitende", 3, 3], ["Ausgebildete Leitende ausserhalb J+S", 0, 3]], "qual": [["Förderkonzept Breitensport (Foundation)", 2], ["Vielfältiges Sportangebot (doppelt gewichtet)", 3], ["Wettkampfformate im F", 3]]}, "sp": {"quant": [["Beschäftigungsgrade der Schlüsselfunktionen", 5, 5], ["Beschäftigungsgrade Trainer*innen national", 10, 10]], "qual": [["Adäquate Besetzung der Schlüsselfunktionen", 3], ["Förderkonzept Trainer*innen", null], ["Umsetzung Förderkonzept Trainer*innen, Ausbildung", 3], ["Umsetzung Förderkonzept Trainer*innen, Förderung (doppelt gewichtet)", 2], ["Umsetzung Förderkonzept Trainer*innen: Begleitung", 3]]}, "ls": {"Biathlon": {"quant": [["OS/POS", 4, 5], ["WM/EM", 3, 4], ["JWM/JEM", 3, 3], ["Potenzial im int. Vergleich", 2, 3]], "qual": [["Leistungssport Förderkonzept (FTEM)", 3], ["Kaderstruktur und Förderung", 3], ["Selektion für Kader und Wettkämpfe", 3], ["Wettkampfformate im T", 2], ["Forschung und Entwicklung", 3], ["Gesundheits- und Leistungsmanagement", 3], ["Umfeldmanagement", 2], ["Infrastruktur und Sportanlagen", 3], ["Sportgrossanlässe", 3]]}, "Langlauf": {"quant": [["OS/POS", 5, 5], ["WM/EM", 4, 4], ["JWM/JEM", 3, 3], ["Potenzial im int. Vergleich", 3, 3]], "qual": [["Leistungssport Förderkonzept (FTEM)", 3], ["Kaderstruktur und Förderung", 3], ["Selektion für Kader und Wettkämpfe", 3], ["Wettkampfformate im T", 2], ["Forschung und Entwicklung", 3], ["Gesundheits- und Leistungsmanagement", 3], ["Umfeldmanagement", 2], ["Infrastruktur und Sportanlagen", 3], ["Sportgrossanlässe", 2]]}, "Nordische Kombination": {"quant": [["OS/POS", 0, 5], ["WM/EM", 0, 4], ["JWM/JEM", 0, 3], ["Potenzial im int. Vergleich", 0, 3]], "qual": [["Leistungssport Förderkonzept (FTEM)", 2], ["Kaderstruktur und Förderung", 2], ["Selektion für Kader und Wettkämpfe", 2], ["Wettkampfformate im T", 1], ["Forschung und Entwicklung", 1], ["Gesundheits- und Leistungsmanagement", 2], ["Umfeldmanagement", 1], ["Infrastruktur und Sportanlagen", 2], ["Sportgrossanlässe", 0]]}, "Ski Alpin": {"quant": [["OS/POS", 5, 5], ["WM/EM", 4, 4], ["JWM/JEM", 3, 3], ["Potenzial im int. Vergleich", 3, 3]], "qual": [["Leistungssport Förderkonzept (FTEM)", 3], ["Kaderstruktur und Förderung", 3], ["Selektion für Kader und Wettkämpfe", 3], ["Wettkampfformate im T", 3], ["Forschung und Entwicklung", 3], ["Gesundheits- und Leistungsmanagement", 3], ["Umfeldmanagement", 2], ["Infrastruktur und Sportanlagen", 3], ["Sportgrossanlässe", 3]]}, "Ski Freestyle": {"quant": [["OS/POS", 5, 5], ["WM/EM", 4, 4], ["JWM/JEM", 2.5, 3], ["Potenzial im int. Vergleich", 3, 3]], "qual": [["Leistungssport Förderkonzept (FTEM)", 3], ["Kaderstruktur und Förderung", 3], ["Selektion für Kader und Wettkämpfe", 3], ["Wettkampfformate im T", 3], ["Forschung und Entwicklung", 2], ["Gesundheits- und Leistungsmanagement", 2], ["Umfeldmanagement", 2], ["Infrastruktur und Sportanlagen", 3], ["Sportgrossanlässe", 3]]}, "Skispringen": {"quant": [["OS/POS", 4.5, 5], ["WM/EM", 2, 4], ["JWM/JEM", 1.5, 3], ["Potenzial im int. Vergleich", 2, 3]], "qual": [["Leistungssport Förderkonzept (FTEM)", 3], ["Kaderstruktur und Förderung", 3], ["Selektion für Kader und Wettkämpfe", 3], ["Wettkampfformate im T", 2], ["Forschung und Entwicklung", 2], ["Gesundheits- und Leistungsmanagement", 3], ["Umfeldmanagement", 2], ["Infrastruktur und Sportanlagen", 3], ["Sportgrossanlässe", 2]]}, "Snowboard": {"quant": [["OS/POS", 4, 5], ["WM/EM", 4, 4], ["JWM/JEM", 3, 3], ["Potenzial im int. Vergleich", 2, 3]], "qual": [["Leistungssport Förderkonzept (FTEM)", 3], ["Kaderstruktur und Förderung", 3], ["Selektion für Kader und Wettkämpfe", 3], ["Wettkampfformate im T", 3], ["Forschung und Entwicklung", 2], ["Gesundheits- und Leistungsmanagement", 2], ["Umfeldmanagement", 2], ["Infrastruktur und Sportanlagen", 3], ["Sportgrossanlässe", 3]]}, "Telemark": {"quant": [["OS/POS", 0, 5], ["WM/EM", 4, 4], ["JWM/JEM", 1, 3], ["Potenzial im int. Vergleich", 1, 3]], "qual": [["Leistungssport Förderkonzept (FTEM)", 1], ["Kaderstruktur und Förderung", 1], ["Selektion für Kader und Wettkämpfe", 2], ["Wettkampfformate im T", 1], ["Forschung und Entwicklung", 0], ["Gesundheits- und Leistungsmanagement", 0], ["Umfeldmanagement", 1], ["Infrastruktur und Sportanlagen", 1], ["Sportgrossanlässe", 0]]}}}}};
+const DATA = BUNDLE.data, DETAIL = BUNDLE.detail;
+const NAMES = Object.keys(DATA).sort((a,b)=>a.localeCompare(b,'de'));
+const fmt=(n)=> (n==null?'–':n.toLocaleString('de-CH',{minimumFractionDigits:2,maximumFractionDigits:2}));
+const fmt0=(n)=> (n==null?'–':n.toLocaleString('de-CH',{maximumFractionDigits:1}));
+function kat(t){if(t==null)return '–';if(t>=45)return '45+';const b=Math.floor(t/5)*5;return b+' – <'+(b+5);}
+const COLOR={ba:'#4a9b5e',bs:'#d9b53a',sp:'#5b9bd5',ls:'#e06464',ew:'#9b59b6',nasak:'#0d9488'};
+const LS_INACTIVE=new Set(['Grasski','Snow Bike']);
+const DIMINFO={ba:{cls:'c-green',label:'Basisaufgaben',col:COLOR.ba},bs:{cls:'c-yellow',label:'Breitensport',col:COLOR.bs},sp:{cls:'c-blue',label:'Sportpersonal',col:COLOR.sp},ls:{cls:'c-red',label:'Leistungssport',col:COLOR.ls},ew:{cls:'c-purple',label:'Entwicklung',col:COLOR.ew},nasak:{cls:'c-teal',label:'NASAK',col:COLOR.nasak}};
+
+for(const k in DATA){const ls=DATA[k].ls;DATA[k].lsAvg=ls.length?ls.reduce((s,x)=>s+x.total,0)/ls.length:0;DATA[k].lsTotal=ls.reduce((s,x)=>s+x.total,0);DATA[k].lsMax=ls.length?Math.max(...ls.map(x=>x.total)):0;DATA[k].sum3=DATA[k].ba.total+DATA[k].bs.total+DATA[k].sp.total+DATA[k].lsTotal;const K=p=>Math.floor(p/5)*5;DATA[k].lsKatSum=ls.reduce((s,x)=>s+K(x.total),0);DATA[k].ewKatScore=K(DATA[k].ba.total)*20+K(DATA[k].bs.total)*5+K(DATA[k].sp.total)*40+DATA[k].lsKatSum*25;}
+const MAX_LS_TOTAL=NAMES.reduce((m,n)=>Math.max(m,DATA[n].lsTotal),0);
+const MAX_EW_SCORE=NAMES.reduce((m,n)=>Math.max(m,DATA[n].ewKatScore||0),0);
+const NASAK_RATE = 1885965 / 215; // Swiss-Ski: lsKatSum=215 → 1'885'965 CHF (fix, kein Topf-Slider)
+for(const k in DATA){ DATA[k].nasakPay = Math.round(DATA[k].lsKatSum * NASAK_RATE); }
+const MAX_NASAK=NAMES.reduce((m,n)=>Math.max(m,DATA[n].nasakPay),0);
+const AVG={};['ba','bs','sp'].forEach(d=>AVG[d]=NAMES.reduce((s,n)=>s+DATA[n][d].total,0)/NAMES.length);
+AVG.ls=NAMES.reduce((s,n)=>s+DATA[n].lsTotal,0)/NAMES.length;
+AVG.ew=NAMES.reduce((s,n)=>s+(DATA[n].ewKatScore||0),0)/NAMES.length;
+AVG.nasak=NAMES.reduce((s,n)=>s+DATA[n].nasakPay,0)/NAMES.length;
+function rankOf(name,acc){const a=NAMES.map(n=>({n,v:acc(DATA[n])})).sort((x,y)=>y.v-x.v);return a.findIndex(x=>x.n===name)+1;}
+
+const sel=document.getElementById('sel');
+NAMES.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});
+
+function ovCard(dim,title,d,rank){
+  const cls=DIMINFO[dim].cls,col=DIMINFO[dim].col,pct=Math.min(100,d.total/45*100);
+  const potMap={ba:[SIM_DEFAULTS.ba,SIM_TOTAL_BA],bs:[SIM_DEFAULTS.bs,SIM_TOTAL_BS],sp:[SIM_DEFAULTS.sp,SIM_TOTAL_SP]};
+  let payRow='';
+  if(potMap[dim]){
+    const p=Math.round(potMap[dim][0]*KAT(d.total)/potMap[dim][1]);
+    payRow=`<div class="row"><span class="l">Ausgelöster Beitrag</span><span class="r" style="color:${col};font-weight:700">${p.toLocaleString('de-CH')} CHF</span></div>`;
+  }
+  return `<div class="card ${cls}" data-dim="${dim}"><div class="hd">${title}<span class="dd">Deep Dive ▸</span></div><div class="bd">
+    <div class="row"><span class="l">Punkte</span><span class="big">${fmt(d.total)}</span></div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <div class="row"><span class="l">Kategorie</span><span class="r"><span class="kat">${kat(d.total)}</span></span></div>
+    ${payRow}<div class="row"><span class="l">Quantitativ</span><span class="r">${fmt(d.quant)} / 15</span></div>
+    <div class="row"><span class="l">Qualitätsfaktor</span><span class="r">${fmt(d.qf)} / 3</span></div>
+    <div class="rank">Rang <b>${rank}</b> von ${NAMES.length} Verbänden</div></div></div>`;
+}
+
+/* ---- radar ---- */
+let radarCompare=[];
+const CMP_COLORS=['#e06464','#37a86b','#b07cc6','#e8943a','#d9b53a','#1f9bb3'];
+const AXDIMS=[['ba','Basisaufgaben'],['bs','Breitensport'],['sp','Sportpersonal'],['ls','Leistungssport'],['ew','Entwicklung']];
+function dimVal(n,dk){return dk==='ls'?DATA[n].lsTotal:dk==='ew'?DATA[n].ewKatScore:dk==='nasak'?DATA[n].nasakPay:DATA[n][dk].total;}
+function radar(name){
+  radarCompare=radarCompare.filter(n=>n!==name&&NAMES.includes(n));
+  const axes=AXDIMS.map(a=>[a[0],a[1].replace('Basisaufgaben','Basis&shy;aufgaben').replace('Sportpersonal','Sport&shy;personal').replace('Leistungssport','Leistungs&shy;sport')]);
+  const cx=175,cy=155,R=110,ang=i=>(-90+i*72)*Math.PI/180,pt=(i,r)=>[cx+Math.cos(ang(i))*r,cy+Math.sin(ang(i))*r];
+  let g='';[0.25,0.5,0.75,1].forEach(f=>{g+=`<polygon points="${axes.map((_,i)=>pt(i,R*f).join(',')).join(' ')}" fill="none" stroke="#e6e9ee"/>`;});
+  axes.forEach((_,i)=>{const[x,y]=pt(i,R);g+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e6e9ee"/>`;});
+  const radarScale=(dk,v)=>dk==='ls'?v/10:v;
+  const maxPerDim=AXDIMS.map(a=>a[0]==='ls'?MAX_LS_TOTAL/10:a[0]==='ew'?MAX_EW_SCORE:Math.max(...NAMES.map(n=>DATA[n][a[0]].total)));
+  const poly=arr=>arr.map((v,i)=>pt(i,R*Math.min(1,v/maxPerDim[i])).join(',')).join(' ');
+  const valsFor=n=>AXDIMS.map(a=>radarScale(a[0],dimVal(n,a[0])));
+  const realFor=n=>AXDIMS.map(a=>dimVal(n,a[0]));
+  const avgArr=AXDIMS.map(a=>radarScale(a[0],AVG[a[0]]));
+  // series: average (bottom), comparisons, main (top)
+  g+=`<polygon points="${poly(avgArr)}" fill="rgba(150,158,168,.16)" stroke="#c0c6cf" stroke-width="1.5"/>`;
+  const hit=[]; // {x,y,n,dim,v}
+  radarCompare.forEach((cn,ci)=>{const col=CMP_COLORS[ci%CMP_COLORS.length],va=valsFor(cn),ra=realFor(cn);
+    g+=`<polygon points="${poly(va)}" fill="none" stroke="${col}" stroke-width="2" stroke-opacity=".9"/>`;
+    va.forEach((v,i)=>{const[x,y]=pt(i,R*Math.min(1,v/maxPerDim[i]));g+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${col}"/>`;hit.push({x,y,n:cn,dim:AXDIMS[i][1],v:ra[i]});});
+  });
+  const valArr=valsFor(name);
+  const realVals=realFor(name);
+  g+=`<polygon points="${poly(valArr)}" fill="rgba(58,120,181,.18)" stroke="#3a78b5" stroke-width="2.5"/>`;
+  valArr.forEach((v,i)=>{const[x,y]=pt(i,R*Math.min(1,v/maxPerDim[i]));g+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="#3a78b5"/>`;hit.push({x,y,n:name,dim:AXDIMS[i][1],v:realVals[i]});});
+  // axis labels: dim name, main value (real), average
+  axes.forEach((a,i)=>{let[x,y]=pt(i,R+22);let anc=Math.abs(x-cx)<6?'middle':(x>cx?'start':'end');
+    const avgVal=a[0]==='ls'?AVG.ls:AVG[a[0]];
+    const valCol=COLOR[a[0]];
+    g+=`<text x="${x}" y="${y}" text-anchor="${anc}" dominant-baseline="middle" font-size="11" font-weight="700" fill="#6b7480">${a[1]}${a[0]==='ls'?' ÷10':''}</text>`;
+    g+=`<text x="${x}" y="${y+13}" text-anchor="${anc}" font-size="11" font-weight="800" fill="${valCol}">${fmt(realVals[i])}</text>`;
+    g+=`<text x="${x}" y="${y+26}" text-anchor="${anc}" font-size="10" fill="#9a9fa8">Ø ${fmt(avgVal)}</text>`;});
+  // transparent hit targets for tooltip
+  hit.forEach((h,k)=>{g+=`<circle class="rpt" data-k="${k}" cx="${h.x.toFixed(1)}" cy="${h.y.toFixed(1)}" r="8" fill="#000" fill-opacity="0" style="cursor:pointer"/>`;});
+  document.getElementById('radar').innerHTML=`<svg viewBox="-30 0 420 315" width="100%" style="max-height:315px">${g}</svg>`;
+  document.getElementById('radarName').textContent=name;
+  // tooltip
+  const tip=document.getElementById('radartip'),wrap=document.querySelector('#radar').parentElement;
+  document.querySelectorAll('#radar .rpt').forEach(c=>{const h=hit[+c.dataset.k];
+    c.addEventListener('mousemove',e=>{const r=wrap.getBoundingClientRect();tip.style.left=(e.clientX-r.left)+'px';tip.style.top=(e.clientY-r.top)+'px';tip.style.opacity=1;tip.innerHTML=`<b>${h.n}</b><br>${h.dim}: ${fmt(h.v)}`;});
+    c.addEventListener('mouseleave',()=>tip.style.opacity=0);});
+  // dropdown options (exclude main + already compared)
+  const addSel=document.getElementById('radarAdd');
+  addSel.innerHTML='<option value="">+ Verband hinzufügen…</option>'+NAMES.filter(n=>n!==name&&!radarCompare.includes(n)).map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+  // legend
+  let leg=`<span><i class="dot" style="background:#3a78b5"></i><b>${name}</b> (gewählt)</span><span><i class="dot" style="background:#c0c6cf"></i>Ø aller ${NAMES.length} Verbände</span>`;
+  leg+=radarCompare.map((cn,ci)=>`<span class="rmchip" data-n="${cn.replace(/"/g,'&quot;')}" style="cursor:pointer"><i class="dot" style="background:${CMP_COLORS[ci%CMP_COLORS.length]}"></i>${cn} <b style="color:#b04a4a">✕</b></span>`).join('');
+  document.getElementById('radarLeg').innerHTML=leg;
+  document.querySelectorAll('#radarLeg .rmchip').forEach(ch=>ch.addEventListener('click',()=>{radarCompare=radarCompare.filter(n=>n!==ch.dataset.n);radar(sel.value);refreshCompareViews();}));
+}
+/* ---- Vergleichslogik: Klick auf anderen Verband = Vergleich (nicht laden) ---- */
+function cmpColor(v){const i=radarCompare.indexOf(v);return i<0?null:CMP_COLORS[i%CMP_COLORS.length];}
+function refreshCompareViews(){const n=sel.value;renderCmp(n);renderQQBars(n);scatter(n);heatmap(n);}
+function toggleCompare(v){
+  if(!v||v===sel.value)return;
+  const i=radarCompare.indexOf(v), adding=i<0;
+  if(adding)radarCompare.push(v);else radarCompare.splice(i,1);
+  radar(sel.value);refreshCompareViews();
+  if(adding){const r=document.querySelector('#radar');if(r)r.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+/* ---- scatter ---- */
+const scShow={ba:true,bs:true,sp:true};
+function scatter(name){
+  const W=380,H=270,pad=42,x=q=>pad+q/15*(W-pad-14),y=f=>H-pad-(f-1)/2*(H-pad-14);
+  let g=`<rect x="${pad}" y="14" width="${W-pad-14}" height="${H-pad-14}" fill="#fafbfc" stroke="#eef0f3"/>`;
+  for(let q=0;q<=15;q+=5)g+=`<line x1="${x(q)}" y1="14" x2="${x(q)}" y2="${H-pad}" stroke="#eef0f3"/><text x="${x(q)}" y="${H-pad+14}" font-size="9" text-anchor="middle" fill="#9aa2ad">${q}</text>`;
+  for(let f=1;f<=3;f+=0.5)g+=`<line x1="${pad}" y1="${y(f)}" x2="${W-14}" y2="${y(f)}" stroke="#eef0f3"/><text x="${pad-6}" y="${y(f)+3}" font-size="9" text-anchor="end" fill="#9aa2ad">${f.toFixed(1)}</text>`;
+  g+=`<text x="${(W+pad)/2}" y="${H-6}" font-size="10" text-anchor="middle" fill="#6b7480">Quantitative Punkte (/15)</text>`;
+  g+=`<text x="12" y="${H/2}" font-size="10" text-anchor="middle" fill="#6b7480" transform="rotate(-90 12 ${H/2})">Qualitätsfaktor (/3)</text>`;
+  [['ba',COLOR.ba],['bs',COLOR.bs],['sp',COLOR.sp]].filter(([dk])=>scShow[dk]).forEach(([dk,c])=>{NAMES.forEach(n=>{const d=DATA[n][dk],s=n===name,cc=cmpColor(n);
+    const r=s?6:(cc?5.5:3.5), op=s?1:(cc?.95:.32), st=s?'#1f2733':(cc||'none'), sw=s?1.5:(cc?2:0);
+    g+=`<circle class="pt" data-n="${n.replace(/"/g,'&quot;')}" data-d="${dk}" cx="${x(d.quant).toFixed(1)}" cy="${y(d.qf).toFixed(1)}" r="${r}" fill="${c}" fill-opacity="${op}" stroke="${st}" stroke-width="${sw}"/>`;});});
+  document.getElementById('scatter').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:280px">${g}</svg>`;
+  const tip=document.getElementById('tip'),wrap=document.getElementById('scatter').closest('.sc-wrap'),dn={ba:'Basisaufgaben',bs:'Breitensport',sp:'Sportpersonal'};
+  document.querySelectorAll('#scatter .pt').forEach(c=>{
+    c.addEventListener('mousemove',e=>{const r=wrap.getBoundingClientRect(),d=DATA[c.dataset.n][c.dataset.d];tip.style.left=(e.clientX-r.left)+'px';tip.style.top=(e.clientY-r.top)+'px';tip.style.opacity=1;tip.innerHTML=`<b>${c.dataset.n}</b> · ${dn[c.dataset.d]}<br>Quant ${fmt(d.quant)} · QF ${fmt(d.qf)} · Total ${fmt(d.total)}`;});
+    c.addEventListener('mouseleave',()=>tip.style.opacity=0);c.addEventListener('click',()=>toggleCompare(c.dataset.n));});
+}
+/* ---- heatmap ---- */
+function heatColor(hex,v,max){const t=Math.max(0,Math.min(1,v/max)),r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16),mix=c=>Math.round(255+(c-255)*(0.12+0.88*t));return `rgb(${mix(r)},${mix(g)},${mix(b)})`;}
+let hmTopN=10, hmManual=[];
+function heatmap(name){
+  const full=NAMES.map(n=>({n,...DATA[n]})).sort((a,b)=>b.sum3-a.sum3);
+  const rankN={};full.forEach((r,i)=>rankN[r.n]=i+1);
+  const topSet=new Set(full.slice(0,hmTopN).map(r=>r.n));
+  const forced=new Set([name,...radarCompare]), manualSet=new Set(hmManual);
+  const rows=full.filter(r=>topSet.has(r.n)||forced.has(r.n)||manualSet.has(r.n));
+  document.getElementById('hmbody').innerHTML=rows.map(r=>{
+    const cell=(dk,val)=>`<td><div class="cell" data-n="${r.n.replace(/"/g,'&quot;')}" data-dim="${dk}" style="background:${heatColor(COLOR[dk],val,45)}">${fmt0(val)}</div></td>`;
+    const cc=cmpColor(r.n);
+    const cls=r.n===name?'sel':(cc?'cmprow':'');
+    const st=cc?` style="outline:2px solid ${cc};outline-offset:-2px"`:'';
+    const dot=cc?`<span class="cmpdot" style="background:${cc}"></span>`:'';
+    const isManual=manualSet.has(r.n)&&!topSet.has(r.n)&&!forced.has(r.n);
+    const rm=isManual?` <span class="rmx" data-k="${r.n.replace(/"/g,'&quot;')}" title="Entfernen">✕</span>`:'';
+    const ewPay=Math.round(SIM_DEFAULTS.ew/2*r.ewKatScore/SIM_TOTAL_EW);
+    const ewCell=`<td><div class="cell" data-n="${r.n.replace(/"/g,'&quot;')}" data-dim="ew" style="background:${heatColor(COLOR.ew,r.ewKatScore,MAX_EW_SCORE)};cursor:pointer">${(ewPay/1000).toLocaleString('de-CH',{maximumFractionDigits:0})}k</div></td>`;
+    const nasakCell=`<td><div class="cell" data-n="${r.n.replace(/"/g,'&quot;')}" data-dim="nasak" style="background:${heatColor(COLOR.nasak,r.nasakPay,MAX_NASAK)};cursor:pointer">${(r.nasakPay/1000).toLocaleString('de-CH',{maximumFractionDigits:0})}k</div></td>`;
+    return `<tr class="${cls}"${st}><td class="rk">${rankN[r.n]}</td><td class="nm" data-n="${r.n.replace(/"/g,'&quot;')}">${dot}${r.n}${rm}</td>${cell('ba',r.ba.total)}${cell('bs',r.bs.total)}${cell('sp',r.sp.total)}${cell('ls',r.lsTotal)}${ewCell}${nasakCell}<td class="tot"><div class="cell">${fmt0(r.sum3)}</div></td></tr>`;
+  }).join('');
+  document.getElementById('hmTitle').textContent=`Verbände (${rows.length} von ${NAMES.length})`;
+  document.querySelectorAll('#hmbody .cell[data-n]').forEach(el=>el.addEventListener('click',()=>openDeep(el.dataset.n,el.dataset.dim)));
+  document.querySelectorAll('#hmbody .nm').forEach(el=>el.addEventListener('click',e=>{if(e.target.classList.contains('rmx'))return;openDeep(el.dataset.n,'ba');}));
+  document.querySelectorAll('#hmbody .rmx').forEach(x=>x.addEventListener('click',e=>{e.stopPropagation();hmManual=hmManual.filter(k=>k!==x.dataset.k);heatmap(sel.value);}));
+  const shown=new Set(rows.map(r=>r.n));
+  document.getElementById('hmAddSel').innerHTML='<option value="">+ Verband hinzufügen…</option>'+NAMES.filter(n=>!shown.has(n)).sort((a,b)=>a.localeCompare(b,'de')).map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+}
+
+/* ---------- DEEP DIVE ---------- */
+function barlist(items,color){ // items: [name, value, max]
+  return `<div class="blist">`+items.map(it=>{
+    const [nm,v,mx]=it; if(v==null) return `<div class="bi"><div class="bn">${nm}</div><div class="bt"></div><div class="bv na">n/a</div></div>`;
+    const w=Math.max(2,Math.min(100,v/mx*100));
+    return `<div class="bi"><div class="bn">${nm}</div><div class="bt"><i style="width:${w}%;background:${color}"></i></div><div class="bv">${fmt(v)} / ${mx}</div></div>`;
+  }).join('')+`</div>`;
+}
+function distStrip(name,dimKey,color,maxv,accFn){
+  const acc=accFn||(x=>x[dimKey].total);
+  const vals=NAMES.map(n=>({n,v:acc(DATA[n])})),cur=acc(DATA[name]);
+  const sorted=[...vals].sort((a,b)=>b.v-a.v),rank=sorted.findIndex(x=>x.n===name)+1;
+  const W=700,H=58,L=8,R=8,xx=v=>L+v/maxv*(W-L-R);
+  let g=`<line x1="${L}" y1="42" x2="${W-R}" y2="42" stroke="#d8dde3"/>`;
+  const tickStep=maxv>500?Math.ceil(maxv/20/100)*100:5;
+  const fmtTick=v=>maxv>100000?Math.round(v/1000)+'k':v;
+  for(let t=0;t<=maxv;t+=tickStep){g+=`<line x1="${xx(t)}" y1="38" x2="${xx(t)}" y2="46" stroke="#cfd5db"/><text x="${xx(t)}" y="56" font-size="9" text-anchor="middle" fill="#9aa2ad">${fmtTick(t)}</text>`}
+  vals.forEach(o=>{const s=o.n===name;g+=`<line x1="${xx(o.v).toFixed(1)}" y1="${s?14:26}" x2="${xx(o.v).toFixed(1)}" y2="42" stroke="${s?color:'#c2c8d0'}" stroke-width="${s?3:1.4}"/>`;});
+  vals.forEach(o=>{g+=`<line class="dtick" data-n="${o.n.replace(/"/g,'&quot;')}" data-v="${o.v}" x1="${xx(o.v).toFixed(1)}" y1="12" x2="${xx(o.v).toFixed(1)}" y2="44" stroke="#000" stroke-opacity="0" stroke-width="9" style="cursor:pointer"/>`;});
+  const cx=xx(cur);g+=`<circle cx="${cx.toFixed(1)}" cy="14" r="4" fill="${color}"/><text x="${cx.toFixed(1)}" y="9" font-size="10" font-weight="800" text-anchor="middle" fill="#1f2733">${fmt(cur)}</text>`;
+  return `<div class="dist sc-wrap" data-dim="${dimKey}"><svg viewBox="0 0 ${W} ${H}" width="100%">${g}</svg><div class="tip" id="disttip"></div><div class="note" style="margin-top:2px">Rang <b style="color:#1f2733">${rank}</b> von ${NAMES.length} · jeder Strich = ein Verband <b>(über einen Strich fahren oder klicken zeigt den Namen)</b>, farbig = ${name}.</div></div>`;
+}
+function bindModalDist(curName){
+  const wrap=document.querySelector('#mbody .dist.sc-wrap');if(!wrap)return;
+  const tip=wrap.querySelector('#disttip'),dim=wrap.dataset.dim;
+  wrap.querySelectorAll('.dtick').forEach(t=>{
+    t.addEventListener('mousemove',e=>{const r=wrap.getBoundingClientRect();tip.style.left=(e.clientX-r.left)+'px';tip.style.top=(e.clientY-r.top)+'px';tip.style.opacity=1;
+      const n=t.dataset.n,maxLbl=(dim==='ls'||dim==='ew'||dim==='nasak')?'':' / 45';tip.innerHTML=`<b>${n}</b>${n===curName?' · aktuell':''}<br>${DIMINFO[dim].label}: ${fmt(parseFloat(t.dataset.v))}${maxLbl}`;});
+    t.addEventListener('mouseleave',()=>tip.style.opacity=0);
+    t.addEventListener('click',()=>{tip.style.opacity=0;openDeep(t.dataset.n,dim);});
+  });
+}
+
+let ddSport=null;
+function openDeep(name,dim){
+  const info=DIMINFO[dim], d=dim==='ls'?null:DATA[name][dim];
+  document.getElementById('mhead').innerHTML=`<div><div class="mt" style="color:${info.col}">Deep Dive · ${name}</div><h3>${info.label}</h3></div><button class="close" onclick="closeDeep()">✕</button>`;
+  document.getElementById('mhead').style.borderTopColor=info.col;
+  let h='';
+  if(dim==='ew'){
+    const ewScore=DATA[name].ewKatScore, ewPayout=Math.round(SIM_DEFAULTS.ew/2*ewScore/SIM_TOTAL_EW), ewRank=rankOf(name,x=>x.ewKatScore);
+    h+=`<div class="logic"><div class="b"><div class="k">EW-Score</div><div class="v" style="color:${COLOR.ew}">${fmt(ewScore)}</div></div><div class="b"><div class="k">Rang</div><div class="v">${ewRank} / ${NAMES.length}</div></div><div class="b"><div class="k">Ausgelöster Beitrag</div><div class="v" style="color:${COLOR.ew}">${ewPayout.toLocaleString('de-CH')} CHF</div></div><span class="kat" style="background:var(--purple-soft);color:#7d3e96;margin-left:auto">aus 3.5 Mio CHF</span></div>`;
+    const maxBA=Math.max(...NAMES.map(n=>DATA[n].ba.total)), maxBS=Math.max(...NAMES.map(n=>DATA[n].bs.total)), maxSP=Math.max(...NAMES.map(n=>DATA[n].sp.total));
+    h+=`<div class="sub-h">Score-Zusammensetzung (BA + BS + SP + LS)</div>`;
+    h+=barlist([['Basisaufgaben',DATA[name].ba.total,maxBA],['Breitensport',DATA[name].bs.total,maxBS],['Sportpersonal',DATA[name].sp.total,maxSP],['Leistungssport',DATA[name].lsTotal,MAX_LS_TOTAL]],COLOR.ew);
+    const allFedEW=NAMES.map(n=>({n,v:DATA[n].ewKatScore})).sort((a,b)=>b.v-a.v);
+    const maxEWv=Math.max(...allFedEW.map(x=>x.v),1);
+    h+=`<div class="sub-h" style="margin-top:16px">Einordnung im Verbandsvergleich (EW-Score)</div>`+
+      distStrip(name,'ew',COLOR.ew,Math.ceil(maxEWv/10)*10,x=>x.ewKatScore);
+  }else if(dim==='nasak'){
+    const nRank=rankOf(name,x=>x.nasakPay);
+    h+=`<div class="logic"><div class="b"><div class="k">LS KAT-Score</div><div class="v" style="color:${COLOR.nasak}">${DATA[name].lsKatSum}</div></div><div class="b"><div class="k">Rang</div><div class="v">${nRank} / ${NAMES.length}</div></div><div class="b"><div class="k">NASAK-Beitrag</div><div class="v" style="color:${COLOR.nasak}">${DATA[name].nasakPay.toLocaleString('de-CH')} CHF</div></div><span class="kat" style="background:var(--teal-soft);color:#0a7a70;margin-left:auto">fix · kein Slider</span></div>`;
+    h+=`<div class="sub-h">Basis: KAT pro Sportart im Leistungssport</div>`;
+    h+=barlist(DATA[name].ls.map(s=>[s.sportart,s.total,Math.max(...DATA[name].ls.map(x=>x.total),1)]),COLOR.nasak);
+    h+=`<div class="sub-h" style="margin-top:4px;font-size:11px;color:var(--muted)">KAT je Sportart: ${DATA[name].ls.map(s=>`${s.sportart} → KAT=${Math.floor(s.total/5)*5}`).join(' · ')}</div>`;
+    h+=`<div class="sub-h" style="margin-top:16px">Einordnung im Verbandsvergleich (NASAK)</div>`+
+      distStrip(name,'nasak',COLOR.nasak,Math.ceil(MAX_NASAK/100000)*100000,x=>x.nasakPay);
+  }else if(dim!=='ls'){
+    h+=`<div class="logic">
+      <div class="b"><div class="k">Quantitativ</div><div class="v">${fmt(d.quant)}<span style="font-size:12px;color:#aab0b9"> /15</span></div></div>
+      <div class="op">×</div>
+      <div class="b"><div class="k">Qualitätsfaktor</div><div class="v">${fmt(d.qf)}<span style="font-size:12px;color:#aab0b9"> /3</span></div></div>
+      <div class="op">=</div>
+      <div class="b"><div class="k">Total Punkte</div><div class="v" style="color:${info.col}">${fmt(d.total)}<span style="font-size:12px;color:#aab0b9"> /45</span></div></div>
+      <span class="kat" style="background:${info.col}22;color:${info.col}">Kategorie ${kat(d.total)}</span></div>`;
+    const det=(DETAIL[name]||{})[dim];
+    if(det){
+      h+=`<div class="sub-h">Quantitative Einzelkriterien (erreichte Punkte)</div>`+barlist(det.quant,info.col);
+      h+=`<div class="sub-h">Qualitative Einzelkriterien (Bewertung /3)</div>`+barlist(det.qual.map(q=>[q[0],q[1],3]),info.col);
+    }else{
+      h+=`<div class="sub-h">Einzelkriterien</div><div class="infobox">Die Bewertung der <b>einzelnen Fragen/Kriterien</b> ist im Datensatz nur für die publizierte Referenzbewertung <b>Swiss-Ski</b> verfügbar. Für ${name} sind die Aggregate erfasst: Quantitativ <b>${fmt(d.quant)} / 15</b>, Qualitätsfaktor <b>${fmt(d.qf)} / 3</b>.</div>`;
+    }
+    h+=`<div class="sub-h">Einordnung im Verbandsvergleich (Total /45)</div>`+distStrip(name,dim,info.col,45);
+  }else{
+    // Leistungssport: column chart of sports + per-sport drilldown
+    const sports=[...DATA[name].ls].sort((a,b)=>b.total-a.total);
+    h+=`<div class="logic"><div class="b"><div class="k">Total Punkte</div><div class="v" style="color:${info.col}">${fmt(DATA[name].lsTotal)}</div></div><div class="b"><div class="k">Best</div><div class="v">${fmt(DATA[name].lsMax)}</div></div><div class="b"><div class="k">Sportarten</div><div class="v">${sports.length}</div></div><span class="kat" style="background:${info.col}22;color:${info.col};margin-left:auto">Rang ${rankOf(name,x=>x.lsTotal)} / ${NAMES.length}</span></div>`;
+    const INACTIVE_TITLE=' title="nicht mehr Leistungssport förderberechtigt"';
+    h+=`<div class="sub-h">Total Punkte je Sportart</div><div class="colchart" id="lscol">`+
+       sports.map(s=>{const ia=LS_INACTIVE.has(s.sportart);return`<div class="col" data-s="${s.sportart.replace(/"/g,'&quot;')}"${ia?INACTIVE_TITLE:''}><div class="cv"${ia?' style="color:#bbb;text-decoration:line-through"':''}>${fmt0(s.total)}</div><div class="bar2" style="height:${Math.max(3,s.total/45*100)}%;opacity:${ia?0.2:0.45+0.55*Math.min(1,s.total/45)};${ia?'filter:grayscale(100%)':''}"></div></div>`;}).join('')+`</div>`+
+       `<div class="collabels">`+sports.map(s=>{const ia=LS_INACTIVE.has(s.sportart);return`<div class="cl"${ia?' style="color:#bbb;font-style:italic"':''}>${s.sportart}</div>`;}).join('')+`</div>`;
+    h+=`<div class="sub-h">Detail je Sportart</div>`;
+    const hasDet=(DETAIL[name]||{}).ls;
+    h+=`<div class="sportsel" id="sportsel">`+sports.map((s,i)=>{const ia=LS_INACTIVE.has(s.sportart);return`<span class="sp" data-s="${s.sportart.replace(/"/g,'&quot;')}"${ia?INACTIVE_TITLE:''}${ia?' style="color:#bbb;text-decoration:line-through"':''}>${s.sportart}</span>`;}).join('')+`</div><div id="sportdetail"></div>`;
+    const allFeds=[...NAMES].map(n=>({n,v:DATA[n].lsTotal})).sort((a,b)=>b.v-a.v);
+    const maxLsV=Math.max(...allFeds.map(x=>x.v),1);
+    h+=`<div class="sub-h" style="margin-top:20px">Einordnung im Verbandsvergleich (Total LS-Punkte)</div>`+
+      distStrip(name,'ls',COLOR.ls,Math.ceil(maxLsV/10)*10,x=>x.lsTotal);
+  }
+  document.getElementById('mbody').innerHTML=h;
+  document.getElementById('modalbg').classList.add('open');
+  bindModalDist(name);
+  if(dim==='ls'){
+    const sports=[...DATA[name].ls].sort((a,b)=>b.total-a.total);
+    ddSport=sports[0]?sports[0].sportart:null;
+    bindLS(name);renderSport(name);
+  }
+}
+function bindLS(name){
+  document.querySelectorAll('#lscol .col').forEach(c=>c.addEventListener('click',()=>{ddSport=c.dataset.s;renderSport(name);}));
+  document.querySelectorAll('#sportsel .sp').forEach(c=>c.addEventListener('click',()=>{ddSport=c.dataset.s;renderSport(name);}));
+}
+function renderSport(name){
+  document.querySelectorAll('#lscol .col').forEach(c=>c.classList.toggle('sel',c.dataset.s===ddSport));
+  document.querySelectorAll('#sportsel .sp').forEach(c=>c.classList.toggle('active',c.dataset.s===ddSport));
+  const s=DATA[name].ls.find(x=>x.sportart===ddSport);if(!s){document.getElementById('sportdetail').innerHTML='';return;}
+  const det=((DETAIL[name]||{}).ls||{})[ddSport];const col=COLOR.ls;
+  let h=`<div class="logic"><div class="b"><div class="k">Quantitativ</div><div class="v">${fmt(s.quant)}<span style="font-size:12px;color:#aab0b9"> /15</span></div></div><div class="op">×</div><div class="b"><div class="k">Qualitätsfaktor</div><div class="v">${fmt(s.qf)}<span style="font-size:12px;color:#aab0b9"> /3</span></div></div><div class="op">=</div><div class="b"><div class="k">Total</div><div class="v" style="color:${col}">${fmt(s.total)}<span style="font-size:12px;color:#aab0b9"> /45</span></div></div><span class="kat" style="background:${col}22;color:#c44d4d;margin-left:auto">Kategorie ${kat(s.total)}</span></div>`;
+  if(det){
+    h+=`<div class="sub-h">Quantitative Kriterien (erreichte Punkte)</div>`+barlist(det.quant,col);
+    h+=`<div class="sub-h">Qualitative Kriterien (Bewertung /3)</div>`+barlist(det.qual.map(q=>[q[0],q[1],3]),col);
+  }else{
+    h+=`<div class="infobox" style="margin-top:8px">Kriterien-Detail (OS/POS, WM/EM, Förderkonzept …) ist im Datensatz nur für die Referenzbewertung <b>Swiss-Ski</b> publiziert. Für <b>${dvSafe(ddSport)}</b> erfasst: Quantitativ <b>${fmt(s.quant)} / 15</b>, Qualitätsfaktor <b>${fmt(s.qf)} / 3</b>.</div>`;
+  }
+  document.getElementById('sportdetail').innerHTML=h;
+}
+function dvSafe(s){return s.replace(/</g,'&lt;');}
+function closeDeep(){document.getElementById('modalbg').classList.remove('open');}
+document.getElementById('modalbg').addEventListener('click',e=>{if(e.target.id==='modalbg')closeDeep();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDeep();});
+
+/* ---------- main ---------- */
+function render(name){
+  const d=DATA[name];sel.value=name;
+  document.getElementById('gesamt').textContent=fmt(d.sum3);
+  let ov=ovCard('ba','Basisaufgaben',d.ba,rankOf(name,x=>x.ba.total))+ovCard('bs','Breitensport',d.bs,rankOf(name,x=>x.bs.total))+ovCard('sp','Sportpersonal',d.sp,rankOf(name,x=>x.sp.total));
+  const lsRank=rankOf(name,x=>x.lsTotal),lspct=Math.min(100,d.lsTotal/MAX_LS_TOTAL*100);
+  const lsPayout=Math.round(SIM_DEFAULTS.ls*d.lsKatSum/SIM_TOTAL_LS);
+  ov+=`<div class="card c-red" data-dim="ls"><div class="hd">Leistungssport<span class="dd">Deep Dive ▸</span></div><div class="bd">
+    <div class="row"><span class="l">Total Punkte</span><span class="big">${fmt(d.lsTotal)}</span></div>
+    <div class="bar"><i style="width:${lspct}%"></i></div>
+    <div class="row"><span class="l">Ausgelöster Beitrag</span><span class="r" style="color:var(--red);font-weight:700">${lsPayout.toLocaleString('de-CH')} CHF</span></div>
+    <div class="row"><span class="l">Anzahl Sportarten</span><span class="r">${d.ls.length}</span></div>
+    <div class="rank">Rang <b>${lsRank}</b> von ${NAMES.length}</div></div></div>`;
+  const ewPayout=Math.round(SIM_DEFAULTS.ew/2*d.ewKatScore/SIM_TOTAL_EW);
+  const ewRank=rankOf(name,x=>x.ewKatScore);
+  const ewPct=Math.min(100,d.ewKatScore/MAX_EW_SCORE*100);
+  ov+=`<div class="card c-purple" data-dim="ew"><div class="hd">EW – Entwicklung<span class="dd">Deep Dive ▸</span></div><div class="bd">
+    <div class="row"><span class="l">EW-Score (kat.)</span><span class="big">${fmt(d.ewKatScore)}</span></div>
+    <div class="bar"><i style="width:${ewPct}%"></i></div>
+    <div class="row"><span class="l">Ausgelöster Beitrag</span><span class="r" style="color:var(--purple);font-weight:700">${ewPayout.toLocaleString('de-CH')} CHF</span></div>
+    <div class="row"><span class="l">Basis</span><span class="r" style="font-size:11px">BA + BS + SP + LS</span></div>
+    <div class="rank">Rang <b>${ewRank}</b> von ${NAMES.length}</div></div></div>`;
+  const nasakRank=rankOf(name,x=>x.nasakPay);
+  const nasakPct=Math.min(100,d.nasakPay/MAX_NASAK*100);
+  ov+=`<div class="card c-teal" data-dim="nasak"><div class="hd">NASAK – Nutzungsbeiträge<span class="dd">Deep Dive ▸</span></div><div class="bd">
+    <div class="row"><span class="l">LS KAT-Score</span><span class="big">${d.lsKatSum}</span></div>
+    <div class="bar"><i style="width:${nasakPct}%"></i></div>
+    <div class="row"><span class="l">Ausgelöster Beitrag</span><span class="r" style="color:var(--teal);font-weight:700">${d.nasakPay.toLocaleString('de-CH')} CHF</span></div>
+    <div class="row"><span class="l">Basis</span><span class="r" style="font-size:11px">Σ KAT(Sportart LS)</span></div>
+    <div class="rank">Rang <b>${nasakRank}</b> von ${NAMES.length}</div></div></div>`;
+  const ovEl=document.getElementById('overview');ovEl.innerHTML=ov;
+  ovEl.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>openDeep(name,c.dataset.dim)));
+
+  renderLsTable(name);
+  radar(name);scatter(name);renderQQBars(name);renderCmp(name);heatmap(name);
+}
+
+/* ---- Kombinierte Sportarten-Tabelle: eigene (markiert) + andere (Top N + manuell) ---- */
+const ALLSPORTS=[];
+for(const v in DATA){DATA[v].ls.forEach(s=>ALLSPORTS.push({v,s:s.sportart,quant:s.quant,qf:s.qf,total:s.total}));}
+let lsTopN=5, lsManual=[];
+function renderLsTable(name){
+  const own=DATA[name].ls.map(s=>({v:name,s:s.sportart,quant:s.quant,qf:s.qf,total:s.total,own:true}));
+  const others=ALLSPORTS.filter(o=>o.v!==name).sort((a,b)=>b.total-a.total);
+  const top=others.slice(0,lsTopN), topKeys=new Set(top.map(o=>o.v+'|'+o.s));
+  const cmp=[...top];
+  lsManual.forEach(k=>{const o=others.find(z=>z.v+'|'+z.s===k);if(o&&!topKeys.has(k))cmp.push(o);});
+  const rows=[...own,...cmp].sort((a,b)=>b.total-a.total);
+  document.getElementById('lsCombined').innerHTML=rows.map(o=>{
+    const key=o.v+'|'+o.s, manual=!o.own&&!topKeys.has(key), w=Math.min(100,o.total/45*100), z=o.total===0?' zero':'';
+    return `<tr class="${o.own?'ownrow':''}" data-v="${o.v.replace(/"/g,'&quot;')}" data-s="${o.s.replace(/"/g,'&quot;')}">
+      <td class="sport">${o.own?'<span class="ownmark">●</span> ':''}${o.s}</td>
+      <td class="lcell ${o.own?'ownv':'cmpv'}">${o.v}</td>
+      <td class="${o.quant===0?'zero':''}">${fmt(o.quant)}</td><td>${fmt(o.qf)}</td>
+      <td><span class="kat" style="background:var(--red-soft);color:#c44d4d">${kat(o.total)}</span></td>
+      <td class="${z}"><b>${fmt(o.total)}</b><span class="minibar"><i style="width:${w}%"></i></span></td>
+      <td>${manual?`<span class="rmx" data-k="${key.replace(/"/g,'&quot;')}" title="Entfernen">✕</span>`:''}</td></tr>`;
+  }).join('');
+  document.getElementById('lsCmpTitle').textContent=`Andere einblenden (${cmp.length} von ${others.length})`;
+  document.getElementById('ownName').textContent=name;
+  document.querySelectorAll('#lsCombined tr[data-v]').forEach(tr=>tr.addEventListener('click',e=>{
+    if(e.target.classList.contains('rmx'))return;
+    const v=tr.dataset.v;openDeep(v,'ls');ddSport=tr.dataset.s;renderSport(v);}));
+  document.querySelectorAll('#lsCombined .rmx').forEach(x=>x.addEventListener('click',e=>{e.stopPropagation();lsManual=lsManual.filter(k=>k!==x.dataset.k);renderLsTable(name);}));
+  const shown=new Set(rows.map(o=>o.v+'|'+o.s));
+  const add=others.filter(o=>!shown.has(o.v+'|'+o.s)).sort((a,b)=>a.s.localeCompare(b.s,'de'));
+  document.getElementById('lsAddSel').innerHTML='<option value="">+ einzelne Sportart hinzufügen…</option>'+add.map(o=>`<option value="${(o.v+'|'+o.s).replace(/"/g,'&quot;')}">${o.s} — ${o.v}</option>`).join('');
+}
+
+/* ---- Qualität vs. Quantität pro Verband – gruppiertes Balkendiagramm ---- */
+let qqDim='ba', qqShowQ=true, qqShowF=true, qqSort='q', qqTopN=10, qqManual=[];
+const C_Q='#3a86b5', C_F='#e8943a';
+function qqVals(n,dim){
+  if(dim==='ls'){const ls=DATA[n].ls;if(!ls.length)return{q:0,f:0};return{q:ls.reduce((a,b)=>a+b.quant,0)/ls.length,f:ls.reduce((a,b)=>a+b.qf,0)/ls.length};}
+  const d=DATA[n][dim];return{q:d.quant,f:d.qf};
+}
+function renderQQBars(name){
+  let rows=NAMES.map(n=>({n,...qqVals(n,qqDim)}));
+  if(qqSort==='q') rows.sort((a,b)=>b.q-a.q||b.f-a.f);
+  else if(qqSort==='qa') rows.sort((a,b)=>a.q-b.q||a.f-b.f);
+  else if(qqSort==='f') rows.sort((a,b)=>b.f-a.f||b.q-a.q);
+  else if(qqSort==='fa') rows.sort((a,b)=>a.f-b.f||a.q-b.q);
+  else rows.sort((a,b)=>a.n.localeCompare(b.n,'de'));
+  rows.forEach((r,i)=>r.rank=i+1);
+  const topSet=new Set(rows.slice(0,qqTopN).map(r=>r.n));
+  const forced=new Set([name,...radarCompare]), manualSet=new Set(qqManual);
+  const show=rows.filter(r=>topSet.has(r.n)||forced.has(r.n)||manualSet.has(r.n));
+  document.getElementById('qqbars').innerHTML=show.map(r=>{
+    const qp=Math.max(1.5,r.q/15*100), fp=Math.max(1.5,r.f/3*100), selc=r.n===name?' sel':'';
+    const qBar=qqShowQ?`<div class="qqbar"><span class="tag" style="color:${C_Q}">Q</span><div class="track"><i style="width:${qp.toFixed(1)}%;background:${C_Q}"></i></div><span class="val">${fmt(r.q)}<small> /15</small></span></div>`:'';
+    const fBar=qqShowF?`<div class="qqbar"><span class="tag" style="color:${C_F}">QF</span><div class="track"><i style="width:${fp.toFixed(1)}%;background:${C_F}"></i></div><span class="val">${fmt(r.f)}<small> /3</small></span></div>`:'';
+    const cc=cmpColor(r.n);
+    const isManual=manualSet.has(r.n)&&!topSet.has(r.n)&&!forced.has(r.n);
+    const rm=isManual?` <span class="rmx" data-k="${r.n.replace(/"/g,'&quot;')}" title="Entfernen">✕</span>`:'';
+    return `<div class="qqrow${selc}${cc?' iscmp':''}" data-n="${r.n.replace(/"/g,'&quot;')}"${cc?` style="--cc:${cc}"`:''}>
+      <div class="qqname"><span class="qqnum">${r.rank}</span>${cc?`<span class="cmpdot" style="background:${cc}"></span>`:''}${r.n}${rm}</div>
+      <div class="qqbars2">${qBar}${fBar}</div></div>`;
+  }).join('');
+  document.getElementById('qqCount').textContent=`${show.length} von ${NAMES.length} ·`;
+  document.querySelectorAll('#qqbars .qqrow').forEach(r=>r.addEventListener('click',e=>{if(e.target.classList.contains('rmx'))return;openDeep(r.dataset.n,qqDim);}));
+  document.querySelectorAll('#qqbars .rmx').forEach(x=>x.addEventListener('click',e=>{e.stopPropagation();qqManual=qqManual.filter(k=>k!==x.dataset.k);renderQQBars(sel.value);}));
+  const shown=new Set(show.map(r=>r.n));
+  document.getElementById('qqAddSel').innerHTML='<option value="">+ Verband hinzufügen…</option>'+NAMES.filter(n=>!shown.has(n)).sort((a,b)=>a.localeCompare(b,'de')).map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+}
+document.querySelectorAll('#qqTabs .tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('#qqTabs .tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');qqDim=t.dataset.dim;renderQQBars(sel.value);curDim=qqDim;document.querySelectorAll('.cmp .tab').forEach(x=>{x.classList.toggle('active',x.dataset.dim===curDim);});renderCmp(sel.value);}));
+function qqSyncSort(){if(qqShowQ&&!qqShowF)qqSort='q';else if(qqShowF&&!qqShowQ)qqSort='f';document.getElementById('qqSortSel').value=qqSort;}
+document.getElementById('togQ').addEventListener('click',()=>{if(qqShowQ&&!qqShowF)return;qqShowQ=!qqShowQ;document.getElementById('togQ').classList.toggle('active',qqShowQ);qqSyncSort();renderQQBars(sel.value);});
+document.getElementById('togF').addEventListener('click',()=>{if(qqShowF&&!qqShowQ)return;qqShowF=!qqShowF;document.getElementById('togF').classList.toggle('active',qqShowF);qqSyncSort();renderQQBars(sel.value);});
+document.getElementById('qqSortSel').addEventListener('change',e=>{qqSort=e.target.value;renderQQBars(sel.value);});
+document.getElementById('qqTopSel').addEventListener('change',e=>{qqTopN=+e.target.value;renderQQBars(sel.value);});
+document.getElementById('qqAddSel').addEventListener('change',e=>{const v=e.target.value;if(v&&!qqManual.includes(v)){qqManual.push(v);renderQQBars(sel.value);}});
+document.querySelectorAll('#scLegend .ptog').forEach(b=>b.addEventListener('click',()=>{const d=b.dataset.d;if(scShow[d]&&Object.values(scShow).filter(Boolean).length===1)return;scShow[d]=!scShow[d];b.classList.toggle('active',scShow[d]);scatter(sel.value);}));
+document.getElementById('radarAdd').addEventListener('change',e=>{const v=e.target.value;if(v&&!radarCompare.includes(v))toggleCompare(v);e.target.value='';});
+document.getElementById('lsTopSel').addEventListener('change',e=>{lsTopN=+e.target.value;renderLsTable(sel.value);});
+document.getElementById('lsAddSel').addEventListener('change',e=>{const k=e.target.value;if(k&&!lsManual.includes(k)){lsManual.push(k);renderLsTable(sel.value);}});
+document.getElementById('hmTopSel').addEventListener('change',e=>{hmTopN=+e.target.value;heatmap(sel.value);});
+document.getElementById('hmAddSel').addEventListener('change',e=>{const v=e.target.value;if(v&&!hmManual.includes(v)){hmManual.push(v);heatmap(sel.value);}});
+let curDim='ba', cmpTopN=10, cmpManual=[];
+const dimValue=d=>curDim==='ls'?d.lsTotal:d[curDim].total;
+function renderCmp(name){
+  const arr=NAMES.map(n=>({n,v:dimValue(DATA[n])})).sort((a,b)=>b.v-a.v),max=Math.max(...arr.map(x=>x.v),1),col=COLOR[curDim];
+  const topSet=new Set(arr.slice(0,cmpTopN).map(r=>r.n));
+  const forced=new Set([name,...radarCompare]), manualSet=new Set(cmpManual);
+  const show=arr.filter(r=>topSet.has(r.n)||forced.has(r.n)||manualSet.has(r.n));
+  document.getElementById('cmpbody').innerHTML=show.map(x=>{const cc=cmpColor(x.n);
+    const isManual=manualSet.has(x.n)&&!topSet.has(x.n)&&!forced.has(x.n);
+    const rm=isManual?` <span class="rmx" data-k="${x.n.replace(/"/g,'&quot;')}" title="Entfernen">✕</span>`:'';
+    return `<div class="cbar-row ${x.n===name?'sel':''}${cc?' iscmp':''}" data-n="${x.n.replace(/"/g,'&quot;')}"${cc?` style="--cc:${cc}"`:''}><div class="nm">${cc?`<span class="cmpdot" style="background:${cc}"></span>`:''}${x.n}${rm}</div><div class="cbar"><i style="width:${x.v/max*100}%;background:${col}"></i></div><div class="cval">${fmt(x.v)}</div></div>`;}).join('');
+  document.getElementById('cmpCount').textContent=`${show.length} von ${NAMES.length} ·`;
+  document.querySelectorAll('.cbar-row').forEach(r=>r.addEventListener('click',e=>{if(e.target.classList.contains('rmx'))return;openDeep(r.dataset.n,curDim);}));
+  document.querySelectorAll('#cmpbody .rmx').forEach(x=>x.addEventListener('click',e=>{e.stopPropagation();cmpManual=cmpManual.filter(k=>k!==x.dataset.k);renderCmp(sel.value);}));
+  const shown=new Set(show.map(r=>r.n));
+  document.getElementById('cmpAddSel').innerHTML='<option value="">+ Verband hinzufügen…</option>'+NAMES.filter(n=>!shown.has(n)).sort((a,b)=>a.localeCompare(b,'de')).map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+}
+document.querySelectorAll('.cmp .tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.cmp .tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');curDim=t.dataset.dim;renderCmp(sel.value);if(curDim!=='ls'){qqDim=curDim;document.querySelectorAll('#qqTabs .tab').forEach(x=>{x.classList.toggle('active',x.dataset.dim===qqDim);});renderQQBars(sel.value);}}));
+document.getElementById('cmpTopSel').addEventListener('change',e=>{cmpTopN=+e.target.value;renderCmp(sel.value);});
+document.getElementById('cmpAddSel').addEventListener('change',e=>{const v=e.target.value;if(v&&!cmpManual.includes(v)){cmpManual.push(v);renderCmp(sel.value);}});
+// Calibrated from Swiss-Ski actual payouts (PDF 23.06.2026).
+// Swiss Olympic uses a CATEGORY step model: payout = pot * floor(pts/5)*5 / denom
+// Denom calibrated with Swiss-Ski's kat-lower (not raw pts):
+//   Swiss-Ski BA: 26.65 pts → kat 25 → 671'278 CHF
+//   Swiss-Ski BS: 25.50 pts → kat 25 → 183'251 CHF
+//   Swiss-Ski SP: 41.00 pts → kat 40 → 2'931'778 CHF
+//   Swiss-Ski EW: 26.65 pts → kat 25 → 482'972 CHF
+const KAT = pts => Math.floor(pts/5)*5;
+const SIM_TOTAL_BA = 14e6 * 25 / 671278;    // ~521 kat-pts
+const SIM_TOTAL_BS = 3.5e6 * 25 / 183251;   // ~477 kat-pts
+const SIM_TOTAL_SP = 28e6 * 40 / 2931778;   // ~382 kat-pts
+// LS: KAT pro Sportart aufsummiert; Swiss-Ski: lsKatSum=215 → 1'120'800 CHF
+const SIM_TOTAL_LS = 17.5e6 * 215 / 1120800;
+// EW: kategorisierte Punktzahl BA*20 + BS*5 + SP*40 + Σ(KAT pro Sportart)*25
+// Kalibriert auf Swiss-Ski: score=7600 → 482'972 CHF (Referenz)
+const SIM_TOTAL_EW = 3.5e6 * 7600 / 482972; // 55'075.7 – Swiss-Ski(7600 Pkt) → 482'972 CHF
+
+const SIM_DEFAULTS = {ba:14e6, bs:3.5e6, sp:28e6, ls:17.5e6, ew:7e6};
+
+sel.addEventListener('change',()=>render(sel.value));
+document.getElementById('prev').addEventListener('click',()=>{let i=NAMES.indexOf(sel.value);render(NAMES[(i-1+NAMES.length)%NAMES.length]);});
+document.getElementById('next').addEventListener('click',()=>{let i=NAMES.indexOf(sel.value);render(NAMES[(i+1)%NAMES.length]);});
+render(NAMES.indexOf('Swiss-Ski')>=0?'Swiss-Ski':NAMES[0]);
+const SIM_PCT_DEFAULTS = {ba:20, bs:5, sp:40, ls:25, ew:10};
+let simPots = {ba:14e6, bs:3.5e6, sp:28e6, ls:17.5e6, ew:7e6};
+let kaSplitPct = {ba:null,bs:null,sp:null,ls:null,ew:null};
+let simPcts = {ba:20, bs:5, sp:40, ls:25, ew:10};
+let simRefTotal = 70e6;
+let simHLName = '';
+let simLocked = true;
+let simShowAll = false;
+let simInitialized = false;
+
+
+function resetSimPots() {
+  Object.assign(simPots, SIM_DEFAULTS);
+  Object.assign(simPcts, SIM_PCT_DEFAULTS);
+  simRefTotal = 70e6;
+  ['ba','bs','sp','ls','ew'].forEach(p => {
+    const sl = document.getElementById('sim-sl-'+p);
+    if (sl) sl.value = simPots[p];
+  });
+  renderSim();
+}
+
+function sfmt(v) {
+  if (v < 1) return '–';
+  return Math.round(v).toLocaleString('de-CH');
+}
+
+let _kasRafId = null;
+function renderSimFast() {
+  if (_kasRafId) cancelAnimationFrame(_kasRafId);
+  _kasRafId = requestAnimationFrame(() => { _kasRafId = null; renderSim(true); });
+}
+
+function renderSim(fastOnly=false) {
+  const total = Object.values(simPots).reduce((s,v)=>s+v, 0);
+  const POTS5 = ['ba','bs','sp','ls','ew'];
+  POTS5.forEach(p => {
+    const a = document.getElementById('sim-amt-'+p);
+    if (a) a.textContent = Math.round(simPots[p]).toLocaleString('de-CH');
+    const pct = document.getElementById('sim-pct-'+p);
+    if (pct && document.activeElement !== pct) pct.value = simPcts[p].toFixed(1);
+  });
+  const reservePct = 100 - POTS5.reduce((s,p) => s + simPcts[p], 0);
+  const reserveEl = document.getElementById('sim-reserve');
+  if (reserveEl) {
+    reserveEl.textContent = (reservePct > 0 ? '+' : '') + reservePct.toFixed(1) + '%';
+    reserveEl.className = 'sim-reserve-val ' + (Math.abs(reservePct) < 0.05 ? 'res-ok' : reservePct > 0 ? 'res-pos' : 'res-neg');
+  }
+  const pptEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  pptEl('sim-ppt-ba', Math.round(simPots.ba/SIM_TOTAL_BA).toLocaleString('de-CH') + ' CHF / Kat.');
+  pptEl('sim-ppt-bs', Math.round(simPots.bs/SIM_TOTAL_BS).toLocaleString('de-CH') + ' CHF / Kat.');
+  pptEl('sim-ppt-sp', Math.round(simPots.sp/SIM_TOTAL_SP).toLocaleString('de-CH') + ' CHF / Kat.');
+  pptEl('sim-ppt-ls', Math.round(simPots.ls/SIM_TOTAL_LS).toLocaleString('de-CH') + ' CHF / Pkt.');
+  pptEl('sim-ppt-ew', Math.round(simPots.ew/2/SIM_TOTAL_EW).toLocaleString('de-CH') + ' CHF / Pkt.');
+  document.getElementById('sim-total').textContent = Math.round(total).toLocaleString('de-CH');
+  const baselineTotal = {};
+  NAMES.forEach(n => {
+    const d = DATA[n];
+    baselineTotal[n] = SIM_DEFAULTS.ba * KAT(d.ba.total) / SIM_TOTAL_BA
+      + SIM_DEFAULTS.bs * KAT(d.bs.total) / SIM_TOTAL_BS
+      + SIM_DEFAULTS.sp * KAT(d.sp.total) / SIM_TOTAL_SP
+      + SIM_DEFAULTS.ls * d.lsKatSum / SIM_TOTAL_LS
+      + SIM_DEFAULTS.ew / 2 * d.ewKatScore / SIM_TOTAL_EW
+      + d.nasakPay;
+  });
+  // Formula results (unscaled)
+  const fRes = NAMES.map(n => {
+    const d = DATA[n];
+    return {n,
+      ba: simPots.ba * KAT(d.ba.total) / SIM_TOTAL_BA,
+      bs: simPots.bs * KAT(d.bs.total) / SIM_TOTAL_BS,
+      sp: simPots.sp * KAT(d.sp.total) / SIM_TOTAL_SP,
+      ls: simPots.ls * d.lsKatSum / SIM_TOTAL_LS,
+      ew: simPots.ew / 2 * d.ewKatScore / SIM_TOTAL_EW,
+      nasak: d.nasakPay
+    };
+  });
+  // Formula-derived KA totals per pot (used by renderKASplit as reference)
+  const ctF = fRes.reduce((acc,r) => {
+    acc.ba+=r.ba; acc.bs+=r.bs; acc.sp+=r.sp; acc.ls+=r.ls; acc.ew+=r.ew; return acc;
+  }, {ba:0,bs:0,sp:0,ls:0,ew:0});
+  // KA-split scale factors: proportionally scale each pot's KA amounts to match user-set %
+  const kaScale = {};
+  ['ba','bs','sp','ls','ew'].forEach(p => {
+    const u = kaSplitPct[p];
+    kaScale[p] = (u === null || ctF[p] === 0) ? 1 : (simPots[p] * u / 100) / ctF[p];
+  });
+  let results = fRes.map(r => {
+    const ba=r.ba*kaScale.ba, bs=r.bs*kaScale.bs, sp=r.sp*kaScale.sp;
+    const ls=r.ls*kaScale.ls, ew=r.ew*kaScale.ew, nasak=r.nasak;
+    const tot=ba+bs+sp+ls+ew+nasak;
+    return {n:r.n, ba, bs, sp, ls, ew, nasak, total:tot, delta:tot-(baselineTotal[r.n]||0)};
+  });
+  results.sort((a,b) => b.total - a.total);
+  const ct = results.reduce((acc,r) => {
+    acc.ba+=r.ba; acc.bs+=r.bs; acc.sp+=r.sp; acc.ls+=r.ls; acc.ew+=r.ew; acc.nasak+=r.nasak; acc.total+=r.total; acc.delta+=r.delta; return acc;
+  }, {ba:0,bs:0,sp:0,ls:0,ew:0,nasak:0,total:0,delta:0});
+  const pp = (v,t) => t>0 ? `<span class="pct-chip">${(v/t*100).toFixed(1)}%</span>` : '<span class="pct-chip" style="background:none;color:var(--muted)">–</span>';
+  const dfmt = (v, base) => {
+    const abs = Math.abs(Math.round(v));
+    if (abs < 1) return `<td class="delta-zero">–</td>`;
+    const sign = v > 0 ? '+' : '–';
+    const cls = v > 0 ? 'delta-pos' : 'delta-neg';
+    const pctLine = base > 0 ? `<br><span style="font-size:10px;opacity:.75">${(v/base*100>=0?'+':'')+(v/base*100).toFixed(1)}%</span>` : '';
+    return `<td class="${cls}">${sign}${abs.toLocaleString('de-CH')}${pctLine}</td>`;
+  };
+  const visible = simShowAll ? results : results.slice(0, 10);
+  const rows = visible.map((r,i) => {
+    const hl = simHLName && r.n === simHLName ? ' hl' : '';
+    const esc = r.n.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<tr class="sim-row${hl}" onclick="simHLName=simHLName==='${esc}'?'':'${esc}';renderSim()" style="cursor:pointer"><td class="rk">${i+1}</td><td class="nm">${r.n}</td>`+
+      `<td>${sfmt(r.ba)}</td><td class="pct-col">${pp(r.ba,simPots.ba)}</td>`+
+      `<td>${sfmt(r.bs)}</td><td class="pct-col">${pp(r.bs,simPots.bs)}</td>`+
+      `<td>${sfmt(r.sp)}</td><td class="pct-col">${pp(r.sp,simPots.sp)}</td>`+
+      `<td>${sfmt(r.ls)}</td><td class="pct-col">${pp(r.ls,simPots.ls)}</td>`+
+      `<td>${sfmt(r.ew)}</td><td class="pct-col">${pp(r.ew,simPots.ew/2)}</td>`+
+      `<td style="color:var(--ink);font-weight:800">${sfmt(r.ba+r.bs+r.sp+r.ls+r.ew)}</td>`+
+      `<td>${sfmt(r.nasak)}</td>`+
+      `<td class="tot">${sfmt(r.total)}</td><td class="pct-col">${pp(r.total-r.nasak,simRefTotal-simPots.ew/2)}</td>${dfmt(r.delta, baselineTotal[r.n])}</tr>`;
+  });
+  const totalBase = NAMES.reduce((s,n) => s + (baselineTotal[n]||0), 0);
+  const totRow = `<tr class="tot-row"><td class="rk"></td><td class="nm">Total KA</td>`+
+    `<td>${sfmt(ct.ba)}</td><td class="pct-col">${pp(ct.ba,simPots.ba)}</td>`+
+    `<td>${sfmt(ct.bs)}</td><td class="pct-col">${pp(ct.bs,simPots.bs)}</td>`+
+    `<td>${sfmt(ct.sp)}</td><td class="pct-col">${pp(ct.sp,simPots.sp)}</td>`+
+    `<td>${sfmt(ct.ls)}</td><td class="pct-col">${pp(ct.ls,simPots.ls)}</td>`+
+    `<td>${sfmt(ct.ew)}</td><td class="pct-col">${pp(ct.ew,simPots.ew/2)}</td>`+
+    `<td style="color:var(--muted)">${sfmt(ct.ba+ct.bs+ct.sp+ct.ls+ct.ew)}</td>`+
+    `<td>${sfmt(ct.nasak)}</td>`+
+    `<td class="tot">${sfmt(ct.total)}</td><td class="pct-col">${pp(ct.total-ct.nasak,simRefTotal-simPots.ew/2)}</td>${dfmt(ct.delta, totalBase)}</tr>`;
+  const deltaRow = `<tr class="tot-row" style="font-size:11px"><td></td><td class="nm" style="color:var(--muted);font-style:italic">Δ Töpfe</td>`+
+    POTS5.map(p => {
+      const δ = simPcts[p] - SIM_PCT_DEFAULTS[p];
+      const col = Math.abs(δ) < 0.05 ? 'var(--muted)' : δ > 0 ? '#2d7a45' : '#b03030';
+      const txt = Math.abs(δ) < 0.05 ? '–' : (δ > 0 ? '+' : '') + δ.toFixed(1) + 'pp';
+      return `<td style="color:${col};font-weight:700">${txt}</td><td></td>`;
+    }).join('') +
+    `<td></td><td style="color:var(--muted);font-size:10px">fix</td><td></td><td></td><td></td></tr>`;
+  document.getElementById('sim-body').innerHTML = rows.join('');
+  document.getElementById('sim-foot').innerHTML = totRow + deltaRow;
+  requestAnimationFrame(() => {
+    const ths = document.querySelectorAll('#sim-table-wrap .sim-table thead th');
+    const cols = document.querySelectorAll('#sim-foot-cols col');
+    ths.forEach((th, i) => { if (cols[i]) cols[i].style.width = th.getBoundingClientRect().width + 'px'; });
+  });
+  if (!fastOnly) {
+    renderPotsChart();
+    renderFedStackedBars(results);
+    renderPotCharts(results);
+  }
+  renderKASplit(ctF);
+}
+
+function renderKASplit(ct) {
+  const el = document.getElementById('ka-split-body');
+  if (!el) return;
+  const POT_DEF = [
+    {k:'ba', lbl:'BA – Basisaufgaben', col:'#4a9b5e', pot:simPots.ba, kaCHF:ct.ba, maxPct:100},
+    {k:'bs', lbl:'BS – Breitensport',   col:'#d9b53a', pot:simPots.bs, kaCHF:ct.bs, maxPct:100},
+    {k:'sp', lbl:'SP – Sportpersonal',  col:'#5b9bd5', pot:simPots.sp, kaCHF:ct.sp, maxPct:100},
+    {k:'ls', lbl:'LS – Leistungssport', col:'#e06464', pot:simPots.ls, kaCHF:ct.ls, maxPct:100},
+    {k:'ew', lbl:'EW – Entwicklung',    col:'#9b59b6', pot:simPots.ew, kaCHF:ct.ew, maxPct:50},
+  ];
+  const fmt = v => Math.round(v).toLocaleString('de-CH');
+  let totalKA = 0, totalBasic = 0;
+
+  const cards = POT_DEF.map(p => {
+    const formulaPct = p.pot > 0 ? Math.min(p.maxPct, p.kaCHF / p.pot * 100) : 0;
+    const displayPct = kaSplitPct[p.k] ?? formulaPct;
+    const kaCHF   = p.pot * displayPct / 100;
+    const basicCHF = p.pot - kaCHF;
+    totalKA += kaCHF;
+    totalBasic += basicCHF;
+    const modified = Math.abs(displayPct - formulaPct) > 0.05;
+    const kaW = displayPct.toFixed(1);
+    const bsW = (100 - displayPct).toFixed(1);
+    const STEP = 5;
+    const decV = Math.max(0, Math.round((displayPct - STEP) * 10) / 10);
+    const incV = Math.min(p.maxPct, Math.round((displayPct + STEP) * 10) / 10);
+    const resetLbl = modified
+      ? `<button onclick="kaSplitPct['${p.k}']=null;renderSimFast()" style="font-size:9px;padding:1px 6px;border:1px solid #d1d5db;border-radius:3px;background:#fff;cursor:pointer;color:#6b7280;line-height:1.6">↺ Formel</button>`
+      : `<span style="font-size:9px;color:${p.col};font-weight:700">Formel</span>`;
+    return `<div class="pot-card" data-pot="${p.k}">
+      <div class="pot-hd">
+        <span class="pot-lbl">${p.lbl}</span>
+        ${resetLbl}
+      </div>
+      <div style="height:16px;border-radius:3px;overflow:hidden;display:flex">
+        <div style="width:${kaW}%;background:${p.col};display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;min-width:0;transition:width .15s">${parseFloat(kaW)>14?kaW+'%':''}</div>
+        <div style="flex:1;background:#d1d5db;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:600;color:#374151;white-space:nowrap;overflow:hidden;min-width:0">${parseFloat(bsW)>14?bsW+'%':''}</div>
+      </div>
+      <div class="pot-amt-row">
+        <button class="pot-arrow-h" onclick="kaSplitPct['${p.k}']=${decV};renderSimFast()">◀</button>
+        <div class="pot-amt">KA <span style="color:${p.col}">${kaW}%</span></div>
+        <button class="pot-arrow-h" onclick="kaSplitPct['${p.k}']=${incV};renderSimFast()">▶</button>
+      </div>
+      <input type="range" class="pot-slider" min="0" max="${p.maxPct}" step="0.5" value="${displayPct.toFixed(1)}"
+        oninput="kaSplitPct['${p.k}']=+this.value;renderSimFast()">
+      <div class="pot-ppt">KA: ${fmt(kaCHF)} · Basis: ${fmt(basicCHF)}<br><span style="font-weight:400">Formel ${formulaPct.toFixed(1)}%${p.maxPct<100?' · max '+p.maxPct+'%':''}</span></div>
+    </div>`;
+  });
+
+  const totalPot = totalKA + totalBasic;
+  const kaTotalPct = totalPot > 0 ? totalKA / totalPot * 100 : 0;
+
+  el.innerHTML = `<div class="sim-pots">${cards.join('')}</div>`;
+
+  const barEl = document.getElementById('ka-total-bar');
+  if (barEl) {
+    barEl.innerHTML = `<div style="display:flex;height:36px;border-radius:8px;overflow:hidden">
+      <div style="width:${kaTotalPct.toFixed(2)}%;background:#1f2733;display:flex;align-items:center;padding:0 14px;gap:10px;min-width:0;overflow:hidden">
+        <span style="color:#6ee7b7;font-size:10px;font-weight:700;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px">KA-Anteil</span>
+        <span style="color:#fff;font-size:13px;font-weight:800;white-space:nowrap">${fmt(totalKA)} CHF</span>
+        <span style="color:#6ee7b7;font-size:11px;font-weight:600;white-space:nowrap">(${kaTotalPct.toFixed(1)}%)</span>
+        <button onclick="kaSplitPct={ba:null,bs:null,sp:null,ls:null,ew:null};renderSimFast()" style="margin-left:auto;font-size:10px;padding:2px 9px;background:#374151;border:none;border-radius:4px;color:#d1d5db;cursor:pointer;font-weight:600;white-space:nowrap;flex-shrink:0">↺ Reset</button>
+      </div>
+      <div style="flex:1;background:#d1d5db;display:flex;align-items:center;padding:0 14px;gap:10px;justify-content:flex-end;min-width:0;overflow:hidden">
+        <span style="color:#374151;font-size:13px;font-weight:800;white-space:nowrap">${fmt(totalBasic)} CHF</span>
+        <span style="color:#6b7280;font-size:10px;font-weight:700;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px">Basisverbände (${(100-kaTotalPct).toFixed(1)}%)</span>
+      </div>
+    </div>`;
+  }
+}
+
+function renderPotCharts(results) {
+  const el = document.getElementById('sim-pot-charts');
+  if (!el) return;
+  const POTS = [
+    {d:'ba', lbl:'BA – Basisaufgaben'},
+    {d:'bs', lbl:'BS – Breitensport'},
+    {d:'sp', lbl:'SP – Sportpersonal'},
+    {d:'ls', lbl:'LS – Leistungssport'},
+    {d:'ew', lbl:'EW – Entwicklung'},
+    {d:'nasak', lbl:'NASAK – Nutzungsbeiträge (fix)'}
+  ];
+  const curName = sel.value;
+  const vlbl = v => v >= 1e6 ? (v/1e6).toFixed(2)+'M' : Math.round(v/1000)+'k';
+
+  function potSvg(d, lbl) {
+    const sorted = [...results].sort((a,b)=>b[d]-a[d]);
+    const maxV = Math.max(...sorted.map(r=>r[d]), 1);
+    const yMax = Math.ceil(maxV/100000)*100000;
+    const W=880, padL=55, padR=10, padT=36, padB=90;
+    const chartH=150, H=chartH+padT+padB;
+    const n=sorted.length, step=(W-padL-padR)/n;
+    const barW=Math.max(7,Math.floor(step*0.72));
+    const yToSvg=v=>padT+chartH*(1-v/yMax);
+    const xc=i=>padL+(i+0.5)*step;
+    const col=COLOR[d];
+    let g='';
+    const yStep=yMax<=500000?100000:yMax<=1000000?200000:500000;
+    for(let y=0;y<=yMax;y+=yStep){
+      const yy=yToSvg(y).toFixed(1);
+      g+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="${y===0?'#ccd0d5':'#eef0f3'}" stroke-width="1"/>`;
+      g+=`<text x="${padL-5}" y="${yy}" text-anchor="end" dominant-baseline="middle" font-size="8.5" fill="#9aa2ad">${(y/1000).toFixed(0)}k</text>`;
+    }
+    sorted.forEach((r,i)=>{
+      const h=Math.max(0,r[d]/yMax*chartH);
+      const y=(padT+chartH-h).toFixed(1);
+      const bx=(xc(i)-barW/2).toFixed(1);
+      const isSel=r.n===curName;
+      g+=`<rect x="${bx}" y="${y}" width="${barW}" height="${h.toFixed(1)}" fill="${col}" opacity="${isSel?1:0.65}"/>`;
+      if(isSel) g+=`<rect x="${(xc(i)-barW/2-1).toFixed(1)}" y="${y}" width="${barW+2}" height="${(h+1).toFixed(1)}" fill="none" stroke="#1f2733" stroke-width="1.5" rx="1"/>`;
+      // Data label above bar (rotated -90°)
+      if(r[d] > 0){
+        const lx2=xc(i).toFixed(1), ly2=(parseFloat(y)-3).toFixed(1);
+        g+=`<text transform="rotate(-90,${lx2},${ly2})" x="${lx2}" y="${ly2}" text-anchor="end" font-size="7.5" fill="${isSel?'#1f2733':'#9aa2ad'}" font-weight="${isSel?700:400}">${vlbl(r[d])}</text>`;
+      }
+      const name=r.n.replace(/^Schweizerischer? /,'').replace(/ (Federation|Association)$/,'');
+      const lbl2=name.length>16?name.slice(0,15)+'…':name;
+      g+=`<text transform="rotate(-55 ${xc(i).toFixed(1)} ${(padT+chartH+5).toFixed(1)})" x="${xc(i).toFixed(1)}" y="${(padT+chartH+5).toFixed(1)}" text-anchor="end" font-size="8" fill="${isSel?'#1f2733':'#6b7480'}" font-weight="${isSel?700:400}">${lbl2}</text>`;
+    });
+    g+=`<text x="${padL}" y="${padT-20}" font-size="11" font-weight="700" fill="${col}">${lbl}</text>`;
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:${H}px">${g}</svg>`;
+  }
+
+  el.innerHTML = POTS.map(({d,lbl})=>
+    `<div style="margin-bottom:20px;background:#fff;border-radius:8px;padding:12px 8px 4px;box-shadow:0 1px 3px rgba(0,0,0,.06)">${potSvg(d,lbl)}</div>`
+  ).join('');
+}
+
+function renderFedStackedBars(results) {
+  const el = document.getElementById('sim-fed-bars');
+  if (!el) return;
+  const W=900, padL=55, padR=10, padT=36, padB=105;
+  const chartH=260, H=chartH+padT+padB;
+  const n=results.length;
+  const step=(W-padL-padR)/n;
+  const barW=Math.max(8,Math.floor(step*0.72));
+  const DIMS=['ba','bs','sp','ls','ew'];
+  const dimSum=r=>DIMS.reduce((s,d)=>s+r[d],0);
+  const maxVal=Math.max(...results.map(r=>dimSum(r)),1);
+  const yMax=Math.ceil(maxVal/500000)*500000;
+  const yToSvg=v=>padT+chartH*(1-v/yMax);
+  const xc=i=>padL+(i+0.5)*step;
+  const vlbl=v=>v>=1e6?(v/1e6).toFixed(2)+'M':Math.round(v/1000)+'k';
+  let g='';
+  const yStep=yMax<=3e6?500000:1e6;
+  for(let y=0;y<=yMax;y+=yStep){
+    const yy=yToSvg(y).toFixed(1);
+    g+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="${y===0?'#ccd0d5':'#e8ecf0'}" stroke-width="1"/>`;
+    g+=`<text x="${padL-5}" y="${yy}" text-anchor="end" dominant-baseline="middle" font-size="9" fill="#9aa2ad">${(y/1e6).toFixed(1)}M</text>`;
+  }
+  results.forEach((r,i)=>{
+    const bx=(xc(i)-barW/2).toFixed(1);
+    const isSel=r.n===sel.value;
+    let cumH=0;
+    DIMS.forEach(d=>{
+      const h=Math.max(0,r[d]/yMax*chartH);
+      const y=(padT+chartH-cumH-h).toFixed(1);
+      g+=`<rect x="${bx}" y="${y}" width="${barW}" height="${h.toFixed(1)}" fill="${COLOR[d]}" opacity="${isSel?1:0.72}"/>`;
+      cumH+=h;
+    });
+    if(isSel){
+      const top=yToSvg(dimSum(r)).toFixed(1);
+      const bot=(padT+chartH).toFixed(1);
+      g+=`<rect x="${(xc(i)-barW/2-1).toFixed(1)}" y="${top}" width="${barW+2}" height="${(parseFloat(bot)-parseFloat(top)+1).toFixed(1)}" fill="none" stroke="#1f2733" stroke-width="1.5" rx="1"/>`;
+    }
+    // Total label above bar (rotated -90°)
+    const topY=yToSvg(dimSum(r));
+    const lx2=xc(i).toFixed(1), ly2=(topY-3).toFixed(1);
+    g+=`<text transform="rotate(-90,${lx2},${ly2})" x="${lx2}" y="${ly2}" text-anchor="end" font-size="7.5" fill="${isSel?'#1f2733':'#9aa2ad'}" font-weight="${isSel?700:400}">${vlbl(dimSum(r))}</text>`;
+    const name=r.n.replace(/^Schweizerischer? /,'').replace(/ (Federation|Association)$/,'');
+    const lbl=name.length>17?name.slice(0,16)+'…':name;
+    g+=`<text transform="rotate(-55 ${xc(i).toFixed(1)} ${(padT+chartH+5).toFixed(1)})" x="${xc(i).toFixed(1)}" y="${(padT+chartH+5).toFixed(1)}" text-anchor="end" font-size="8.5" fill="${isSel?'#1f2733':'#6b7480'}" font-weight="${isSel?700:400}">${lbl}</text>`;
+  });
+  const LEG=[['ba','BA'],['bs','BS'],['sp','SP'],['ls','LS'],['ew','EW']];
+  let lx=padL;
+  LEG.forEach(([d,lbl])=>{
+    g+=`<rect x="${lx}" y="${H-13}" width="10" height="10" rx="2" fill="${COLOR[d]}"/>`;
+    g+=`<text x="${lx+14}" y="${H-5}" font-size="9.5" fill="#6b7480">${lbl}</text>`;
+    lx+=38;
+  });
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:${H}px">${g}</svg>`;
+}
+
+function renderPotsChart() {
+  const el = document.getElementById('sim-pots-chart');
+  if (!el) return;
+  const POTS = ['ba','bs','sp','ls','ew'];
+  const NAMES_P = {ba:'BA',bs:'BS',sp:'SP',ls:'LS',ew:'EW'};
+  const total = POTS.reduce((s,p) => s+simPcts[p], 0) || 100;
+  // Stacked bar
+  let bar = '', x = 0;
+  POTS.forEach(p => {
+    const w = simPcts[p]/total*100;
+    const col = COLOR[p];
+    const pct = simPcts[p].toFixed(1);
+    const chf = Math.round(simPots[p]/1e6*10)/10; // in Mio, 1 decimal
+    bar += `<div style="width:${w}%;background:${col};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 2px;box-sizing:border-box;overflow:hidden;min-width:0">
+      <span style="font-weight:800;font-size:13px;color:#fff;white-space:nowrap">${pct}%</span>
+      <span style="font-size:10px;color:rgba(255,255,255,0.85);white-space:nowrap">${NAMES_P[p]}</span>
+      <span style="font-size:10px;color:rgba(255,255,255,0.75);white-space:nowrap">${chf} Mio</span>
+    </div>`;
+  });
+  el.innerHTML = `<div style="display:flex;width:100%;border-radius:8px;overflow:hidden;height:60px;box-shadow:0 1px 4px rgba(0,0,0,.08)">${bar}</div>`;
+}
+
+function simRadarSvg(allVals, curVals, labels, colors, valLabels, W, H, R) {
+  const cx=W/2, cy=H/2;
+  const ang = i => (-90 + i*72)*Math.PI/180;
+  const pt  = (i, r) => [cx+Math.cos(ang(i))*r, cy+Math.sin(ang(i))*r];
+  let g='';
+  for(let lv=1;lv<=5;lv++){
+    const gp=labels.map((_,i)=>pt(i,R*lv/5));
+    g+=`<polygon points="${gp.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${lv===5?'#ccd0d5':'#e8ecf0'}" stroke-width="${lv===5?1.5:1}"/>`;
+  }
+  labels.forEach((_,i)=>{const[x,y]=pt(i,R);g+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#dde1e7" stroke-width="1"/>`;});
+  // other feds (faint)
+  allVals.forEach(v=>{
+    const pts=v.map((val,i)=>pt(i,R*Math.min(1,val)));
+    g+=`<polygon points="${pts.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ')}" fill="#9ab8d8" fill-opacity="0.04" stroke="#9ab8d8" stroke-width="0.8"/>`;
+  });
+  // selected fed (highlighted)
+  const pts=curVals.map((v,i)=>pt(i,R*Math.min(1,v)));
+  g+=`<polygon points="${pts.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ')}" fill="#3a78b5" fill-opacity="0.18" stroke="#3a78b5" stroke-width="2.5"/>`;
+  curVals.forEach((v,i)=>g+=`<circle cx="${pts[i][0].toFixed(1)}" cy="${pts[i][1].toFixed(1)}" r="3.5" fill="${colors[i]}"/>`);
+  // labels
+  labels.forEach((lbl,i)=>{
+    const[x,y]=pt(i,R+24);
+    const anc=i===0?'middle':(i<=2?'start':'end');
+    g+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anc}" dominant-baseline="middle" font-size="9.5" fill="#6b7480">${lbl}</text>`;
+    g+=`<text x="${x.toFixed(1)}" y="${(y+14).toFixed(1)}" text-anchor="${anc}" font-size="10.5" font-weight="800" fill="${colors[i]}">${valLabels[i]}</text>`;
+  });
+  return `<svg viewBox="-35 0 ${W+60} ${H}" width="100%" style="max-height:${H}px">${g}</svg>`;
+}
+
+
+function initSim() {
+  if (simInitialized) return;
+  simInitialized = true;
+  const POTS = ['ba','bs','sp','ls','ew'];
+  POTS.forEach(p => {
+    const sl = document.getElementById('sim-sl-'+p);
+    if (!sl) return;
+    sl.addEventListener('input', () => {
+      simPots[p] = +sl.value;
+      simPcts[p] = simRefTotal > 0 ? simPots[p] / simRefTotal * 100 : 0;
+      renderSim();
+    });
+    const pctInp = document.getElementById('sim-pct-'+p);
+    if (!pctInp) return;
+    pctInp.addEventListener('input', () => {
+      const newPct = Math.max(0, Math.min(100, parseFloat(pctInp.value) || 0));
+      simPcts[p] = newPct;
+      simPots[p] = simRefTotal * newPct / 100;
+      const sl2 = document.getElementById('sim-sl-'+p);
+      if (sl2) sl2.value = simPots[p];
+      renderSim();
+    });
+    const applyStep = delta => {
+      const newPct = Math.max(0, Math.min(100, simPcts[p] + delta));
+      simPcts[p] = newPct;
+      simPots[p] = simRefTotal * newPct / 100;
+      const sl2 = document.getElementById('sim-sl-'+p);
+      if (sl2) sl2.value = simPots[p];
+      renderSim();
+    };
+    document.getElementById('sim-up-'+p)?.addEventListener('click', () => applyStep(2));
+    document.getElementById('sim-dn-'+p)?.addEventListener('click', () => applyStep(-2));
+    const applyChf = delta => {
+      simPots[p] = Math.max(0, Math.min(50000000, simPots[p] + delta));
+      simPcts[p] = simRefTotal > 0 ? simPots[p] / simRefTotal * 100 : 0;
+      const sl2 = document.getElementById('sim-sl-'+p);
+      if (sl2) sl2.value = simPots[p];
+      renderSim();
+    };
+    document.getElementById('sim-add-'+p)?.addEventListener('click', () => applyChf(1400000));
+    document.getElementById('sim-sub-'+p)?.addEventListener('click', () => applyChf(-1400000));
+  });
+  renderSim();
+}
+
+function switchTab(id) {
+  ['standort','simulator','newsport'].forEach(t => {
+    const el = document.getElementById('tab-'+t);
+    if (el) el.style.display = t===id ? '' : 'none';
+    const btn = document.getElementById('tt-'+t);
+    if (btn) btn.classList.toggle('active', t===id);
+  });
+  if (id === 'simulator') initSim();
+  if (id === 'newsport') initNewSport();
+}
+
+function initNewSport() {
+  const fedSel = document.getElementById('ns-fed');
+  if (!fedSel.options.length) {
+    NAMES.forEach(n => {
+      const o = new Option(n, n);
+      if (n === 'Swiss-Ski') o.selected = true;
+      fedSel.add(o);
+    });
+  }
+  const refSel = document.getElementById('ns-ref');
+  if (!refSel.options.length) {
+    const mg = document.createElement('optgroup');
+    mg.label = '– Manuell –';
+    mg.appendChild(new Option('Manuell festlegen …', '__manual__'));
+    refSel.appendChild(mg);
+    const byFed = {};
+    ALLSPORTS.forEach(s => { (byFed[s.v]||(byFed[s.v]=[])).push(s); });
+    Object.keys(byFed).sort().forEach(fed => {
+      const grp = document.createElement('optgroup');
+      grp.label = fed;
+      byFed[fed].sort((a,b) => b.total - a.total).forEach(s => {
+        const val = JSON.stringify({s:s.s, v:s.v, total:s.total, qf:s.qf});
+        const o = new Option(`${s.s}  (${s.total.toFixed(1)} Pkt)`, val);
+        if (s.v === 'Swiss-Ski' && s.s === 'Snowboard') o.selected = true;
+        grp.appendChild(o);
+      });
+      refSel.appendChild(grp);
+    });
+  }
+  renderNewSport();
+}
+
+function renderNewSport() {
+  const fedName = document.getElementById('ns-fed').value;
+  const sportName = (document.getElementById('ns-name').value || 'Neue Sportart').trim();
+  const refVal   = document.getElementById('ns-ref').value;
+  const manWrap  = document.getElementById('ns-manual-wrap');
+
+  let lsTotal, refLabel;
+  if (refVal === '__manual__') {
+    manWrap.style.display = '';
+    lsTotal  = parseFloat(document.getElementById('ns-manual-sl').value);
+    refLabel = 'Manuell';
+  } else {
+    manWrap.style.display = 'none';
+    const ref = JSON.parse(refVal);
+    lsTotal  = ref.total;
+    refLabel = `${ref.s} (${ref.v})`;
+  }
+
+  const d = DATA[fedName];
+  if (!d) return;
+
+  const newKat       = KAT(lsTotal);
+  const fmt          = v => Math.round(v).toLocaleString('de-CH');
+  const fmtD         = v => (v >= 0 ? '+' : '–') + fmt(Math.abs(v));
+  const col          = v => v >= 0 ? '#2d7a45' : '#b03030';
+
+  const curLS        = d.lsKatSum;
+  const curEW        = d.ewKatScore;
+  const newLS        = curLS + newKat;
+  const newEW        = curEW + newKat * 25;
+
+  const pLS = (typeof simPots !== 'undefined' ? simPots.ls : SIM_DEFAULTS.ls);
+  const pEW = (typeof simPots !== 'undefined' ? simPots.ew : SIM_DEFAULTS.ew);
+
+  // LS shared across ALL ~85 feds
+  const oldLSpay = pLS * curLS / SIM_TOTAL_LS;
+  const newLSpay = pLS * newLS / (SIM_TOTAL_LS + newKat);
+  const deltaLS  = newLSpay - oldLSpay;
+
+  // EW: kalibrierte Konstante direkt verwenden (SIM_TOTAL_EW matcht reale Auszahlung 2023)
+  const oldEWpay  = pEW/2 * curEW / SIM_TOTAL_EW;
+  const newEWpay  = pEW/2 * newEW / (SIM_TOTAL_EW + newKat*25);
+  const deltaEW   = newEWpay - oldEWpay;
+
+  // NASAK linear per KAT-unit
+  const oldNASAK  = d.nasakPay;
+  const newNASAK  = Math.round(newLS * NASAK_RATE);
+  const deltaN    = newNASAK - oldNASAK;
+
+  const deltaTotal = deltaLS + deltaEW + deltaN;
+
+  let html = `<div class="ns-scorerow">
+    <div><div class="si-lbl">Referenz-Sportart</div><div class="si-val">${refLabel}</div></div>
+    <div><div class="si-lbl">LS-Punkte</div><div class="si-val">${lsTotal.toFixed(2)}</div></div>
+    <div><div class="si-lbl">KAT-Punkte</div><div class="si-val" style="color:var(--red)">${newKat}</div></div>
+    <div><div class="si-lbl">LS-KAT-Summe</div><div class="si-val">${curLS} <span style="color:var(--muted)">→</span> <span style="color:var(--red)">${newLS}</span></div></div>
+    <div><div class="si-lbl">EW-Score</div><div class="si-val">${curEW.toLocaleString('de-CH')} <span style="color:var(--muted)">→</span> <span style="color:#9b59b6">${newEW.toLocaleString('de-CH')}</span></div></div>
+  </div>`;
+
+  if (newKat === 0) {
+    html += `<div class="infobox">LS-Punkte ${lsTotal.toFixed(1)} ergeben KAT = 0 (muss ≥ 5.0 sein). Keine Auswirkung auf die Förderbeträge.</div>`;
+  } else {
+    html += `<div class="ns-cards">
+      <div class="ns-card" style="border-top:4px solid var(--red)">
+        <div class="ns-card-lbl" style="color:var(--red)">LS – Leistungssport</div>
+        <div class="ns-card-before">${fmt(Math.round(oldLSpay))} CHF (vorher)</div>
+        <div class="ns-card-after">${fmt(Math.round(newLSpay))} CHF</div>
+        <div class="ns-card-delta" style="color:${col(deltaLS)}">${fmtD(deltaLS)} CHF</div>
+        <div class="ns-card-note">Σ KAT: ${curLS} → ${newLS} (+${newKat})<br>Topf geteilt mit allen ~85 Verbänden</div>
+      </div>
+      <div class="ns-card" style="border-top:4px solid #9b59b6">
+        <div class="ns-card-lbl" style="color:#9b59b6">EW – Entwicklung</div>
+        <div class="ns-card-before">${fmt(Math.round(oldEWpay))} CHF (vorher)</div>
+        <div class="ns-card-after">${fmt(Math.round(newEWpay))} CHF</div>
+        <div class="ns-card-delta" style="color:${col(deltaEW)}">${fmtD(deltaEW)} CHF</div>
+        <div class="ns-card-note">EW-Score: ${curEW.toLocaleString('de-CH')} → ${newEW.toLocaleString('de-CH')} (+${(newKat*25).toLocaleString('de-CH')})<br>Topf geteilt unter KA-Verbänden</div>
+      </div>
+      <div class="ns-card" style="border-top:4px solid var(--teal)">
+        <div class="ns-card-lbl" style="color:var(--teal)">NASAK</div>
+        <div class="ns-card-before">${fmt(oldNASAK)} CHF (vorher)</div>
+        <div class="ns-card-after">${fmt(newNASAK)} CHF</div>
+        <div class="ns-card-delta" style="color:${col(deltaN)}">${fmtD(deltaN)} CHF</div>
+        <div class="ns-card-note">+${newKat} KAT-Pkt × ${Math.round(NASAK_RATE).toLocaleString('de-CH')} CHF/Pkt<br>Fix-Betrag, kein geteilter Topf</div>
+      </div>
+    </div>
+    <div class="ns-total">
+      <div>
+        <div class="t-lbl">Mehrförderung «${sportName}» für ${fedName}</div>
+        <div class="t-val">${fmtD(deltaTotal)} CHF / Jahr</div>
+      </div>
+      <div class="t-break">
+        LS &nbsp;${fmtD(deltaLS)} CHF<br>
+        EW &nbsp;${fmtD(deltaEW)} CHF<br>
+        NASAK &nbsp;${fmtD(deltaN)} CHF
+      </div>
+    </div>`;
+  }
+  document.getElementById('ns-result').innerHTML = html;
+}
+
+// Chevron toggles for collapsible chart sections
+document.addEventListener('DOMContentLoaded', () => {
+  // Clone Swiss-Ski logo into simulator header
+  const mainLogo = document.getElementById('main-logo');
+  const simLogo = document.getElementById('sim-logo');
+  if (mainLogo && simLogo) simLogo.innerHTML = mainLogo.innerHTML;
+
+  [['sim-pot-charts-wrap','sim-pot-chevron'],['sim-fed-bars-wrap','sim-fed-chevron']].forEach(([id,chId])=>{
+    const det = document.getElementById(id);
+    if (!det) return;
+    det.addEventListener('toggle', () => {
+      const ch = document.getElementById(chId);
+      if (ch) ch.style.transform = det.open ? 'rotate(90deg)' : '';
+    });
+  });
+});
+
+// ── CSV Export ────────────────────────────────────────────────────────────────
+function downloadSimCSV() {
+  const rows = [['#','Verband','BA CHF','BA %','BS CHF','BS %','SP CHF','SP %','LS CHF','LS %','EW CHF','EW %','NASAK CHF','Total CHF','Total %','Δ CHF']];
+  const allRows = NAMES.map(n => {
+    const d = DATA[n];
+    const ba = simPots.ba * KAT(d.ba.total) / SIM_TOTAL_BA;
+    const bs = simPots.bs * KAT(d.bs.total) / SIM_TOTAL_BS;
+    const sp = simPots.sp * KAT(d.sp.total) / SIM_TOTAL_SP;
+    const ls = simPots.ls * d.lsKatSum / SIM_TOTAL_LS;
+    const ew = simPots.ew / 2 * d.ewKatScore / SIM_TOTAL_EW;
+    const tot = ba+bs+sp+ls+ew+d.nasakPay;
+    const baseTot = SIM_DEFAULTS.ba*KAT(d.ba.total)/SIM_TOTAL_BA
+      +SIM_DEFAULTS.bs*KAT(d.bs.total)/SIM_TOTAL_BS
+      +SIM_DEFAULTS.sp*KAT(d.sp.total)/SIM_TOTAL_SP
+      +SIM_DEFAULTS.ls*d.lsKatSum/SIM_TOTAL_LS
+      +SIM_DEFAULTS.ew/2*d.ewKatScore/SIM_TOTAL_EW
+      +d.nasakPay;
+    return {n, ba, bs, sp, ls, ew, nasakPay: d.nasakPay, tot, delta: tot-baseTot};
+  }).sort((a,b)=>b.tot-a.tot);
+  const pct = (v,t) => t>0 ? (v/t*100).toFixed(2)+'%' : '–';
+  allRows.forEach((r,i) => {
+    rows.push([
+      i+1, r.n,
+      Math.round(r.ba), pct(r.ba,simPots.ba),
+      Math.round(r.bs), pct(r.bs,simPots.bs),
+      Math.round(r.sp), pct(r.sp,simPots.sp),
+      Math.round(r.ls), pct(r.ls,simPots.ls),
+      Math.round(r.ew), pct(r.ew,simPots.ew/2),
+      Math.round(r.nasakPay),
+      Math.round(r.tot), pct(r.tot-r.nasakPay,simRefTotal-simPots.ew/2),
+      Math.round(r.delta)
+    ]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'FoerderSimulator_Export.csv';
+  a.click();
+}
+
+// ── Formellogik-Modal ─────────────────────────────────────────────────────────
+function openLogicModal() {
+  const chf = v => Math.round(v).toLocaleString('de-CH');
+  const pptBA = simPots.ba / SIM_TOTAL_BA;
+  const pptBS = simPots.bs / SIM_TOTAL_BS;
+  const pptSP = simPots.sp / SIM_TOTAL_SP;
+  const pptLS = simPots.ls / SIM_TOTAL_LS;
+  const pptEW = simPots.ew / 2 / SIM_TOTAL_EW;
+
+  // Current selected fed
+  const curName = sel.value;
+  const curD = DATA[curName];
+  const curKatBA = KAT(curD.ba.total);
+  const curKatBS = KAT(curD.bs.total);
+  const curKatSP = KAT(curD.sp.total);
+
+  const steps = [0,5,10,15,20,25,30,35,40,45];
+
+  function stufenTable(label, color, pptVal, curKat, maxKat, unit) {
+    let rows = '';
+    for (const k of steps) {
+      if (k > maxKat) break;
+      const chfVal = pptVal * k;
+      const isCur = k === curKat;
+      rows += `<tr${isCur?' class="kat-cur"':''}>
+        <td>${k}${k<maxKat?' – <'+(k+5):''}</td>
+        <td style="text-align:right;font-weight:${isCur?800:400}">${chf(chfVal)} CHF</td>
+        <td style="text-align:right;color:var(--muted)">${(chfVal/simRefTotal*100).toFixed(2)}%</td>
+        ${isCur?`<td style="color:${color};font-weight:800">← ${curName}</td>`:'<td></td>'}
+      </tr>`;
+    }
+    return `<div class="logic-section">
+      <div class="logic-section-hd" style="background:${color}18;color:${color}">${label}</div>
+      <table class="logic-table">
+        <thead><tr><th>${unit}</th><th style="text-align:right">Beitrag (simuliert)</th><th style="text-align:right">% von 70M</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="logic-formula">Formel: Topf × KAT(Punkte) / SIM_TOTAL &nbsp;|&nbsp; CHF/Kat.-Stufe = ${chf(pptVal)} CHF &nbsp;|&nbsp; Topf = ${chf(simPots[label.split('–')[0].trim().toLowerCase()]||0)} CHF</div>
+    </div>`;
+  }
+
+  // LS & EW: proportional (no steps)
+  const lsChfPkt = pptLS;
+  const ewChfPkt = pptEW;
+  const curEwKatScore = curD.ewKatScore;
+
+  const lsSection = `<div class="logic-section">
+    <div class="logic-section-hd" style="background:#e0646418;color:#e06464">LS – Leistungssport</div>
+    <div class="logic-formula">Kategorisierte Punktzahl pro Sportart (KAT), aufsummiert &nbsp;|&nbsp; Wird mit allen ~85 Verbänden geteilt<br>
+    LS-Score = Σ KAT(Sportart) &nbsp;|&nbsp; CHF / KAT-Pkt = ${chf(lsChfPkt)} CHF &nbsp;|&nbsp; Topf = ${chf(simPots.ls)} CHF<br>
+    ${curName}: LS-Score ${curD.lsKatSum} × ${chf(lsChfPkt)} = <b>${chf(curD.lsKatSum*lsChfPkt)} CHF</b></div>
+  </div>`;
+
+  const ewSection = `<div class="logic-section">
+    <div class="logic-section-hd" style="background:#9b59b618;color:#7d3e96">EW – Entwicklung</div>
+    <div class="logic-formula">Kategorisierte Punktzahl, gewichtet nach Bereichsanteilen &nbsp;|&nbsp; Nur KA-Verbände erhalten EW<br>
+    EW-Score = KAT(BA)×20 + KAT(BS)×5 + KAT(SP)×40 + Σ KAT(Sportart)×25<br>
+    CHF / Score-Pkt = ${chf(ewChfPkt)} CHF &nbsp;|&nbsp; KA-Topf = ${chf(simPots.ew/2)} CHF (Hälfte des EW-Topfs)<br>
+    ${curName}: EW-Score ${curEwKatScore} × ${chf(ewChfPkt)} = <b>${chf(curEwKatScore*ewChfPkt)} CHF</b></div>
+  </div>`;
+
+  const nasakChfPkt = NASAK_RATE;
+  const nasakSection = `<div class="logic-section">
+    <div class="logic-section-hd" style="background:#0d948818;color:#0a7a70">NASAK – Nutzungsbeiträge (fix, kein Slider)</div>
+    <div class="logic-formula">Kategorisierte Punktzahl pro Sportart (KAT), aufsummiert – identisch mit LS-Berechnung<br>
+    NASAK = Σ KAT(Sportart LS) × ${chf(nasakChfPkt)} CHF/KAT-Pkt &nbsp;|&nbsp; Fix kalibriert: Swiss-Ski (215 Pkt → 1'885'965 CHF)<br>
+    ${curName}: LS-KAT-Score ${curD.lsKatSum} × ${chf(nasakChfPkt)} = <b>${chf(curD.lsKatSum * nasakChfPkt)} CHF</b></div>
+  </div>`;
+
+  const html = `
+    <p style="font-size:12px;color:var(--muted);margin:0 0 16px">Werte basieren auf den aktuell eingestellten Töpfen. Hervorgehoben: aktuelle Kategorie von <b>${curName}</b>.</p>
+    ${stufenTable('BA – Basisaufgaben','#4a9b5e',pptBA,curKatBA,45,'Kategorienstufe')}
+    ${stufenTable('BS – Breitensport','#d9b53a',pptBS,curKatBS,45,'Kategorienstufe')}
+    ${stufenTable('SP – Sportpersonal','#5b9bd5',pptSP,curKatSP,45,'Kategorienstufe')}
+    ${lsSection}
+    ${ewSection}
+    ${nasakSection}
+  `;
+
+  document.getElementById('logic-modal-body').innerHTML = html;
+  document.getElementById('logic-modal-bg').classList.add('open');
+}
+
+function closeLogicModal() {
+  document.getElementById('logic-modal-bg').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeLogicModal(); });
+</script>
+<script>
+(function(){
+  const HASH = '38e2b3b84caecae33c3413125bb6fde0c7e32a307ec641cfcfd7af4cfe0eb750';
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function unlock() {
+    document.getElementById('login-overlay').classList.add('hidden');
+  }
+
+  if (sessionStorage.getItem('so_auth') === '1') {
+    unlock();
+  } else {
+    setTimeout(() => { const pw = document.getElementById('login-pw'); if(pw) pw.focus(); }, 50);
+  }
+
+  window.doLogin = async function() {
+    const pwEl = document.getElementById('login-pw');
+    const errEl = document.getElementById('login-err');
+    errEl.textContent = '';
+    const pw = pwEl.value;
+    if (!pw) { errEl.textContent = 'Bitte Passwort eingeben.'; pwEl.focus(); return; }
+    const h = await sha256(pw);
+    if (h === HASH) {
+      sessionStorage.setItem('so_auth', '1');
+      unlock();
+    } else {
+      errEl.textContent = 'Falsches Passwort. Bitte nochmals versuchen.';
+      pwEl.value = '';
+      pwEl.focus();
+    }
+  };
+
+  window.toggleLoginPw = function() {
+    const inp = document.getElementById('login-pw');
+    const isHidden = inp.type === 'password';
+    inp.type = isHidden ? 'text' : 'password';
+    const icon = document.getElementById('eye-icon');
+    if (icon) icon.style.opacity = isHidden ? '0.4' : '1';
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !document.getElementById('login-overlay').classList.contains('hidden')) {
+      window.doLogin();
+    }
+  });
+})();
+</script>
+</body>
+</html>
