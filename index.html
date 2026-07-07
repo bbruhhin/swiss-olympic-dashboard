@@ -535,12 +535,12 @@ td.lcell,th.lcell{text-align:left}
     <h2 class="section" style="margin:8px 0 10px">Simulierte Förderbeiträge – Key-Account-Verbände</h2>
     <div class="sim-ctrl">
       <label><input type="checkbox" id="simShowAll" onchange="simShowAll=this.checked;renderSim()"> Alle anzeigen</label>
-      <label id="sim53-fix-lbl" style="display:none;color:#0a7a70;font-weight:700"><input type="checkbox" id="sim53FixedChk" checked onchange="sim53Fixed=this.checked;renderSim()"> Swiss-Ski &amp; SAC auf 70 Mio. fixieren</label>
+      <label id="sim53-fix-lbl" style="display:none;color:#0a7a70;font-weight:700"><input type="checkbox" id="sim53FixedChk" checked onchange="sim53Fixed=this.checked;renderSim()"> Alle KA auf 70 Mio. fixieren</label>
       <button class="sim-dl-btn" onclick="downloadSimCSV()" title="Tabelle als CSV herunterladen">⬇ CSV Export</button>
       <button class="sim-dl-btn sim-logic-btn" onclick="openLogicModal()" title="Formellogik anzeigen">ⓘ Formellogik</button>
     </div>
     <div id="sim53-fix-note" style="display:none;margin:8px 0 4px;padding:8px 12px;background:#e6f7f5;border-left:3px solid #0d9488;border-radius:0 6px 6px 0;font-size:11px;color:#0a4a45">
-      <b>Angepasste Formellogik (53 Mio.):</b> Swiss-Ski und Schweizer Alpen-Club werden auf ihr 70 Mio.-Niveau fixiert (Faktor ×70/53). Die Differenz wird proportional von den übrigen Verbänden abgezogen.
+      <b>Angepasste Formellogik (53 Mio.):</b> Alle KA-Verbände werden auf ihr 70 Mio.-Niveau fixiert (exakte Beträge aus dem 70-Mio.-Szenario, Δ = 0). Die Mehrbeiträge gehen vollständig zulasten der Basisverbände (Nicht-KA). Bei BA und BS übersteigt der KA-Bedarf den Topf → Basisanteil sinkt auf 0 CHF.
     </div>
     <div id="sim-table-wrap">
     <table class="sim-table">
@@ -1215,32 +1215,20 @@ function renderSim(fastOnly=false) {
   });
   results.sort((a,b) => b.total - a.total);
 
-  // 53 Mio. fixed-amounts adjustment: pin Swiss-Ski & SAC at their 70M baseline
+  // 53 Mio. fixed-amounts adjustment: pin ALL KA verbände at their 70M baseline
+  // Difference is absorbed by Basisverbände (Nicht-KA); for BA/BS/EW this may reduce Basis share to 0
   if (isIn53Mode && sim53Fixed) {
-    const PIN = 70 / 53;
-    const ss  = results.find(r => r.n === 'Swiss-Ski');
-    const sac = results.find(r => r.n === 'Schweizer Alpen-Club');
-    if (ss && sac) {
-      const ssExcl  = ss.ba  + ss.bs  + ss.sp  + ss.ls  + ss.ew;
-      const sacExcl = sac.ba + sac.bs + sac.sp + sac.ls + sac.ew;
-      const delta   = (ssExcl + sacExcl) * (PIN - 1);
-      const othersExcl = results
-        .filter(r => r.n !== 'Swiss-Ski' && r.n !== 'Schweizer Alpen-Club')
-        .reduce((s, r) => s + r.ba + r.bs + r.sp + r.ls + r.ew, 0);
-      const othScale = othersExcl > 0 ? (othersExcl - delta) / othersExcl : 1;
-      ['ba','bs','sp','ls','ew'].forEach(p => { ss[p] *= PIN; sac[p] *= PIN; });
-      ss.total  = ss.ba  + ss.bs  + ss.sp  + ss.ls  + ss.ew  + ss.nasak;
-      sac.total = sac.ba + sac.bs + sac.sp + sac.ls + sac.ew + sac.nasak;
-      ss.delta  = ss.total  - (baselineTotal['Swiss-Ski'] || 0);
-      sac.delta = sac.total - (baselineTotal['Schweizer Alpen-Club'] || 0);
-      results.forEach(r => {
-        if (r.n === 'Swiss-Ski' || r.n === 'Schweizer Alpen-Club') return;
-        ['ba','bs','sp','ls','ew'].forEach(p => { r[p] *= othScale; });
-        r.total = r.ba + r.bs + r.sp + r.ls + r.ew + r.nasak;
-        r.delta = r.total - (baselineTotal[r.n] || 0);
-      });
-      results.sort((a,b) => b.total - a.total);
-    }
+    results.forEach(r => {
+      const d = DATA[r.n];
+      r.ba = SIM_DEFAULTS.ba * KAT(d.ba.total) / SIM_TOTAL_BA;
+      r.bs = SIM_DEFAULTS.bs * KAT(d.bs.total) / SIM_TOTAL_BS;
+      r.sp = SIM_DEFAULTS.sp * KAT(d.sp.total) / SIM_TOTAL_SP;
+      r.ls = SIM_DEFAULTS.ls * d.lsKatSum / SIM_TOTAL_LS;
+      r.ew = SIM_DEFAULTS.ew / 2 * d.ewKatScore / SIM_TOTAL_EW;
+      r.total = r.ba + r.bs + r.sp + r.ls + r.ew + r.nasak;
+      r.delta = r.total - (baselineTotal[r.n] || 0);
+    });
+    results.sort((a,b) => b.total - a.total);
   }
 
   const ct = results.reduce((acc,r) => {
@@ -1299,7 +1287,7 @@ function renderSim(fastOnly=false) {
     renderFedStackedBars(results);
     renderPotCharts(results);
   }
-  renderKASplit(ctF);
+  renderKASplit(isIn53Mode && sim53Fixed ? ct : ctF);
 }
 
 function renderKASplit(ct) {
