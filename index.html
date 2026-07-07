@@ -1294,11 +1294,11 @@ function renderKASplit(ct) {
   const el = document.getElementById('ka-split-body');
   if (!el) return;
   const POT_DEF = [
-    {k:'ba', lbl:'BA – Basisaufgaben', col:'#4a9b5e', pot:simPots.ba, kaCHF:ct.ba, maxPct:100},
-    {k:'bs', lbl:'BS – Breitensport',   col:'#d9b53a', pot:simPots.bs, kaCHF:ct.bs, maxPct:100},
-    {k:'sp', lbl:'SP – Sportpersonal',  col:'#5b9bd5', pot:simPots.sp, kaCHF:ct.sp, maxPct:100},
-    {k:'ls', lbl:'LS – Leistungssport', col:'#e06464', pot:simPots.ls, kaCHF:ct.ls, maxPct:100},
-    {k:'ew', lbl:'EW – Entwicklung',    col:'#9b59b6', pot:simPots.ew, kaCHF:ct.ew, maxPct:50},
+    {k:'ba', lbl:'BA – Basisaufgaben', col:'#4a9b5e', pot:simPots.ba, kaCHF:ct.ba, maxPct:100, basisLbl:'Basis'},
+    {k:'bs', lbl:'BS – Breitensport',   col:'#d9b53a', pot:simPots.bs, kaCHF:ct.bs, maxPct:100, basisLbl:'Basis'},
+    {k:'sp', lbl:'SP – Sportpersonal',  col:'#5b9bd5', pot:simPots.sp, kaCHF:ct.sp, maxPct:100, basisLbl:'Basis'},
+    {k:'ls', lbl:'LS – Leistungssport', col:'#e06464', pot:simPots.ls, kaCHF:ct.ls, maxPct:100, basisLbl:'Basis'},
+    {k:'ew', lbl:'EW – Entwicklung',    col:'#9b59b6', pot:simPots.ew, kaCHF:ct.ew, maxPct:50,  basisLbl:'Swiss Olympic'},
   ];
   const fmt = v => Math.round(v).toLocaleString('de-CH');
   let totalKA = 0, totalBasic = 0;
@@ -1335,7 +1335,7 @@ function renderKASplit(ct) {
       </div>
       <input type="range" class="pot-slider" min="0" max="${p.maxPct}" step="0.5" value="${displayPct.toFixed(1)}"
         oninput="kaSplitPct['${p.k}']=+this.value;renderSimFast()">
-      <div class="pot-ppt">KA: ${fmt(kaCHF)} · Basis: ${fmt(basicCHF)}<br><span style="font-weight:400">Formel ${formulaPct.toFixed(1)}%${p.maxPct<100?' · max '+p.maxPct+'%':''}</span></div>
+      <div class="pot-ppt">KA: ${fmt(kaCHF)} · ${p.basisLbl}: ${fmt(basicCHF)}<br><span style="font-weight:400">Formel ${formulaPct.toFixed(1)}%${p.maxPct<100?' · max '+p.maxPct+'%':''}</span></div>
     </div>`;
   });
 
