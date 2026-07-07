@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -329,6 +329,13 @@ td.lcell,th.lcell{text-align:left}
 .login-err{color:#c44d4d;font-size:12px;font-weight:700;margin-top:10px;min-height:18px;text-align:center}
 .login-divider{border:none;border-top:1px solid var(--line);margin:22px 0 18px}
 </style>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:MediaServiceImageTags msdt:dt="string"></mso:MediaServiceImageTags>
+<mso:lcf76f155ced4ddcb4097134ff3c332f msdt:dt="string"></mso:lcf76f155ced4ddcb4097134ff3c332f>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
 </head>
 <body>
 <!-- LOGIN OVERLAY -->
@@ -528,8 +535,12 @@ td.lcell,th.lcell{text-align:left}
     <h2 class="section" style="margin:8px 0 10px">Simulierte Förderbeiträge – Key-Account-Verbände</h2>
     <div class="sim-ctrl">
       <label><input type="checkbox" id="simShowAll" onchange="simShowAll=this.checked;renderSim()"> Alle anzeigen</label>
+      <label id="sim53-fix-lbl" style="display:none;color:#0a7a70;font-weight:700"><input type="checkbox" id="sim53FixedChk" checked onchange="sim53Fixed=this.checked;renderSim()"> Swiss-Ski &amp; SAC auf 70 Mio. fixieren</label>
       <button class="sim-dl-btn" onclick="downloadSimCSV()" title="Tabelle als CSV herunterladen">⬇ CSV Export</button>
       <button class="sim-dl-btn sim-logic-btn" onclick="openLogicModal()" title="Formellogik anzeigen">ⓘ Formellogik</button>
+    </div>
+    <div id="sim53-fix-note" style="display:none;margin:8px 0 4px;padding:8px 12px;background:#e6f7f5;border-left:3px solid #0d9488;border-radius:0 6px 6px 0;font-size:11px;color:#0a4a45">
+      <b>Angepasste Formellogik (53 Mio.):</b> Swiss-Ski und Schweizer Alpen-Club werden auf ihr 70 Mio.-Niveau fixiert (Faktor ×70/53). Die Differenz wird proportional von den übrigen Verbänden abgezogen.
     </div>
     <div id="sim-table-wrap">
     <table class="sim-table">
@@ -1069,6 +1080,7 @@ let simLocked = true;
 let simShowAll = false;
 let simInitialized = false;
 let isIn53Mode = false;
+let sim53Fixed = true;
 let sim53Saved = null;
 let sim70Saved = null;
 
@@ -1106,6 +1118,12 @@ function updateSimModeUI() {
   }
   const ewKa = document.getElementById('sim-ew-ka-text');
   if (ewKa) ewKa.textContent = 'davon ' + Math.round(simPots.ew/2).toLocaleString('de-CH') + ' CHF für KA-Verbände';
+  const fixLbl = document.getElementById('sim53-fix-lbl');
+  if (fixLbl) fixLbl.style.display = isIn53Mode ? '' : 'none';
+  const fixNote = document.getElementById('sim53-fix-note');
+  if (fixNote) fixNote.style.display = (isIn53Mode && sim53Fixed) ? '' : 'none';
+  const fixChk = document.getElementById('sim53FixedChk');
+  if (fixChk) fixChk.checked = sim53Fixed;
 }
 
 function resetSimPots() {
@@ -1196,6 +1214,35 @@ function renderSim(fastOnly=false) {
     return {n:r.n, ba, bs, sp, ls, ew, nasak, total:tot, delta:tot-(baselineTotal[r.n]||0)};
   });
   results.sort((a,b) => b.total - a.total);
+
+  // 53 Mio. fixed-amounts adjustment: pin Swiss-Ski & SAC at their 70M baseline
+  if (isIn53Mode && sim53Fixed) {
+    const PIN = 70 / 53;
+    const ss  = results.find(r => r.n === 'Swiss-Ski');
+    const sac = results.find(r => r.n === 'Schweizer Alpen-Club');
+    if (ss && sac) {
+      const ssExcl  = ss.ba  + ss.bs  + ss.sp  + ss.ls  + ss.ew;
+      const sacExcl = sac.ba + sac.bs + sac.sp + sac.ls + sac.ew;
+      const delta   = (ssExcl + sacExcl) * (PIN - 1);
+      const othersExcl = results
+        .filter(r => r.n !== 'Swiss-Ski' && r.n !== 'Schweizer Alpen-Club')
+        .reduce((s, r) => s + r.ba + r.bs + r.sp + r.ls + r.ew, 0);
+      const othScale = othersExcl > 0 ? (othersExcl - delta) / othersExcl : 1;
+      ['ba','bs','sp','ls','ew'].forEach(p => { ss[p] *= PIN; sac[p] *= PIN; });
+      ss.total  = ss.ba  + ss.bs  + ss.sp  + ss.ls  + ss.ew  + ss.nasak;
+      sac.total = sac.ba + sac.bs + sac.sp + sac.ls + sac.ew + sac.nasak;
+      ss.delta  = ss.total  - (baselineTotal['Swiss-Ski'] || 0);
+      sac.delta = sac.total - (baselineTotal['Schweizer Alpen-Club'] || 0);
+      results.forEach(r => {
+        if (r.n === 'Swiss-Ski' || r.n === 'Schweizer Alpen-Club') return;
+        ['ba','bs','sp','ls','ew'].forEach(p => { r[p] *= othScale; });
+        r.total = r.ba + r.bs + r.sp + r.ls + r.ew + r.nasak;
+        r.delta = r.total - (baselineTotal[r.n] || 0);
+      });
+      results.sort((a,b) => b.total - a.total);
+    }
+  }
+
   const ct = results.reduce((acc,r) => {
     acc.ba+=r.ba; acc.bs+=r.bs; acc.sp+=r.sp; acc.ls+=r.ls; acc.ew+=r.ew; acc.nasak+=r.nasak; acc.total+=r.total; acc.delta+=r.delta; return acc;
   }, {ba:0,bs:0,sp:0,ls:0,ew:0,nasak:0,total:0,delta:0});
