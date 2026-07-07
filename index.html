@@ -349,7 +349,8 @@ td.lcell,th.lcell{text-align:left}
 <div class="wrap">
   <div class="top-tabs">
     <button class="top-tab active" id="tt-standort" onclick="switchTab('standort')">Standortbestimmung</button>
-    <button class="top-tab" id="tt-simulator" onclick="switchTab('simulator')">Förder-Simulator</button>
+    <button class="top-tab" id="tt-simulator" onclick="switchTab('simulator')">Förder-Simulator (70 Mio.)</button>
+    <button class="top-tab" id="tt-sim53" onclick="switchTab('sim53')">Förder-Simulator (53 Mio.)</button>
     <button class="top-tab" id="tt-newsport" onclick="switchTab('newsport')">Sportart-Simulator</button>
   </div>
   <div id="tab-standort">
@@ -471,7 +472,7 @@ td.lcell,th.lcell{text-align:left}
   <div id="tab-simulator" style="display:none">
     <div class="head" style="margin-bottom:18px">
       <div>
-        <h1>Förder-Simulator</h1>
+        <h1>Förder-Simulator <span id="sim-mode-badge" style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:5px;vertical-align:middle;display:none;background:#e6f7f5;color:#0a7a70"></span></h1>
         <div><span class="sub">Mittelverteilung simulieren – Pilotdaten 23.06.2026</span></div>
         <div class="ph" style="margin-top:10px">Passen Sie die Gelder pro Topf mit den Schiebereglern an (Schritte: 100 000 CHF). Die Tabelle zeigt die simulierten Förderbeiträge der Top-10 Key-Account-Verbände.<br><span style="display:inline-block;margin-top:6px;background:#fef08a;color:#713f12;border-radius:4px;padding:3px 10px;font-size:12px;font-weight:600">&#9998; Prozentangaben in den Töpfen sind direkt editierbar – Wert eintippen und Enter drücken.</span></div>
       </div>
@@ -508,7 +509,7 @@ td.lcell,th.lcell{text-align:left}
         <div class="pot-hd"><span class="pot-lbl">EW – Entwicklung</span><div class="pot-ctrl"><label class="pot-pct-wrap"><input type="number" class="pot-pct-inp" id="sim-pct-ew" min="0" max="100" step="2" value="10.0"><span class="pot-pct-unit">%</span></label><div class="pot-arrows"><button class="pot-arrow" id="sim-up-ew">▲</button><button class="pot-arrow" id="sim-dn-ew">▼</button></div></div></div>
         <div class="pot-amt-row"><button class="pot-arrow-h" id="sim-sub-ew">◀</button><div class="pot-amt"><span id="sim-amt-ew">7'000'000</span> <small>CHF</small></div><button class="pot-arrow-h" id="sim-add-ew">▶</button></div>
         <input type="range" class="pot-slider" id="sim-sl-ew" min="0" max="50000000" step="1400000" value="7000000">
-        <div style="font-size:11px;color:#9b59b6;margin-top:2px;font-weight:600">davon 3'500'000 CHF für KA-Verbände</div>
+        <div id="sim-ew-ka-text" style="font-size:11px;color:#9b59b6;margin-top:2px;font-weight:600">davon 3'500'000 CHF für KA-Verbände</div>
         <div class="pot-ppt" id="sim-ppt-ew">–</div>
       </div>
     </div>
@@ -1051,6 +1052,8 @@ const SIM_TOTAL_LS = 17.5e6 * 215 / 1120800;
 const SIM_TOTAL_EW = 3.5e6 * 7600 / 482972; // 55'075.7 – Swiss-Ski(7600 Pkt) → 482'972 CHF
 
 const SIM_DEFAULTS = {ba:14e6, bs:3.5e6, sp:28e6, ls:17.5e6, ew:7e6};
+const SIM53_DEFAULTS = {ba:10.6e6, bs:2.65e6, sp:21.2e6, ls:13.25e6, ew:5.3e6};
+const SIM53_REF = 53e6;
 
 sel.addEventListener('change',()=>render(sel.value));
 document.getElementById('prev').addEventListener('click',()=>{let i=NAMES.indexOf(sel.value);render(NAMES[(i-1+NAMES.length)%NAMES.length]);});
@@ -1065,16 +1068,58 @@ let simHLName = '';
 let simLocked = true;
 let simShowAll = false;
 let simInitialized = false;
+let isIn53Mode = false;
+let sim53Saved = null;
+let sim70Saved = null;
 
+function saveSimState() {
+  return {
+    pots: {...simPots}, pcts: {...simPcts}, refTotal: simRefTotal,
+    hlName: simHLName, kaSplit: {...kaSplitPct}, showAll: simShowAll
+  };
+}
 
-function resetSimPots() {
-  Object.assign(simPots, SIM_DEFAULTS);
-  Object.assign(simPcts, SIM_PCT_DEFAULTS);
-  simRefTotal = 70e6;
+function applySimState(state) {
+  Object.assign(simPots, state.pots);
+  Object.assign(simPcts, state.pcts);
+  simRefTotal = state.refTotal;
+  simHLName = state.hlName;
+  Object.assign(kaSplitPct, state.kaSplit);
+  simShowAll = state.showAll;
+  const showAllChk = document.getElementById('simShowAll');
+  if (showAllChk) showAllChk.checked = simShowAll;
+  const step = Math.round(simRefTotal * 0.02 / 100000) * 100000 || 1000000;
   ['ba','bs','sp','ls','ew'].forEach(p => {
     const sl = document.getElementById('sim-sl-'+p);
-    if (sl) sl.value = simPots[p];
+    if (sl) { sl.value = simPots[p]; sl.step = step; }
+    const inp = document.getElementById('sim-pct-'+p);
+    if (inp) inp.value = simPcts[p].toFixed(1);
   });
+  updateSimModeUI();
+}
+
+function updateSimModeUI() {
+  const badge = document.getElementById('sim-mode-badge');
+  if (badge) {
+    if (isIn53Mode) { badge.textContent = '53 Mio. CHF'; badge.style.display = ''; }
+    else { badge.style.display = 'none'; }
+  }
+  const ewKa = document.getElementById('sim-ew-ka-text');
+  if (ewKa) ewKa.textContent = 'davon ' + Math.round(simPots.ew/2).toLocaleString('de-CH') + ' CHF für KA-Verbände';
+}
+
+function resetSimPots() {
+  const defs = isIn53Mode ? SIM53_DEFAULTS : SIM_DEFAULTS;
+  const ref  = isIn53Mode ? SIM53_REF : 70e6;
+  Object.assign(simPots, defs);
+  Object.assign(simPcts, SIM_PCT_DEFAULTS);
+  simRefTotal = ref;
+  const step = Math.round(ref * 0.02 / 100000) * 100000 || 1000000;
+  ['ba','bs','sp','ls','ew'].forEach(p => {
+    const sl = document.getElementById('sim-sl-'+p);
+    if (sl) { sl.value = simPots[p]; sl.step = step; }
+  });
+  updateSimModeUI();
   renderSim();
 }
 
@@ -1111,6 +1156,7 @@ function renderSim(fastOnly=false) {
   pptEl('sim-ppt-ls', Math.round(simPots.ls/SIM_TOTAL_LS).toLocaleString('de-CH') + ' CHF / Pkt.');
   pptEl('sim-ppt-ew', Math.round(simPots.ew/2/SIM_TOTAL_EW).toLocaleString('de-CH') + ' CHF / Pkt.');
   document.getElementById('sim-total').textContent = Math.round(total).toLocaleString('de-CH');
+  updateSimModeUI();
   const baselineTotal = {};
   NAMES.forEach(n => {
     const d = DATA[n];
@@ -1483,21 +1529,59 @@ function initSim() {
       if (sl2) sl2.value = simPots[p];
       renderSim();
     };
-    document.getElementById('sim-add-'+p)?.addEventListener('click', () => applyChf(1400000));
-    document.getElementById('sim-sub-'+p)?.addEventListener('click', () => applyChf(-1400000));
+    document.getElementById('sim-add-'+p)?.addEventListener('click', () => applyChf(isIn53Mode ? 1060000 : 1400000));
+    document.getElementById('sim-sub-'+p)?.addEventListener('click', () => applyChf(isIn53Mode ? -1060000 : -1400000));
   });
   renderSim();
 }
 
 function switchTab(id) {
+  // 'sim53' reuses the simulator div – map display to 'simulator'
+  const displayId = (id === 'sim53') ? 'simulator' : id;
   ['standort','simulator','newsport'].forEach(t => {
     const el = document.getElementById('tab-'+t);
-    if (el) el.style.display = t===id ? '' : 'none';
+    if (el) el.style.display = t===displayId ? '' : 'none';
     const btn = document.getElementById('tt-'+t);
     if (btn) btn.classList.toggle('active', t===id);
   });
-  if (id === 'simulator') initSim();
-  if (id === 'newsport') initNewSport();
+  // Handle the extra sim53 button separately
+  const btn53 = document.getElementById('tt-sim53');
+  if (btn53) btn53.classList.toggle('active', id==='sim53');
+
+  if (id === 'simulator') {
+    if (isIn53Mode) {
+      sim53Saved = saveSimState();
+      isIn53Mode = false;
+      if (sim70Saved) applySimState(sim70Saved);
+      else { Object.assign(simPots, SIM_DEFAULTS); Object.assign(simPcts, SIM_PCT_DEFAULTS); simRefTotal = 70e6; updateSimModeUI(); }
+    }
+    initSim();
+    renderSim();
+  } else if (id === 'sim53') {
+    if (!isIn53Mode) {
+      sim70Saved = saveSimState();
+      isIn53Mode = true;
+      if (sim53Saved) {
+        applySimState(sim53Saved);
+      } else {
+        Object.assign(simPots, SIM53_DEFAULTS);
+        Object.assign(simPcts, SIM_PCT_DEFAULTS);
+        simRefTotal = SIM53_REF;
+        kaSplitPct = {ba:null,bs:null,sp:null,ls:null,ew:null};
+        ['ba','bs','sp','ls','ew'].forEach(p => {
+          const sl = document.getElementById('sim-sl-'+p);
+          if (sl) { sl.value = simPots[p]; sl.step = 1060000; }
+          const inp = document.getElementById('sim-pct-'+p);
+          if (inp) inp.value = simPcts[p].toFixed(1);
+        });
+        updateSimModeUI();
+      }
+    }
+    initSim();
+    renderSim();
+  } else if (id === 'newsport') {
+    initNewSport();
+  }
 }
 
 function initNewSport() {
